@@ -27,5 +27,5 @@ done
 
 echo "Marking release as final at Github"
 json_edit_release="{\"tag_name\": \"$github_release_tag\",\"target_commitish\": \"master\",\"name\": \"$github_release_tag\",\"body\": \"Build as of $github_release_tag\",\"draft\": false, \"prerelease\": false}";
-edit_release_url="https://api.github.com/repos/headmelted/prebootstrap/releases/$github_release_id";
+edit_release_url="https://api.github.com/repos/$BUILD_REPOSITORY_NAME/releases/$github_release_id";
 curl --request PATCH -H "Authorization: token $GITHUB_PAT" -H "Content-Type: application/json" --data "$json_edit_release" "$edit_release_url";
