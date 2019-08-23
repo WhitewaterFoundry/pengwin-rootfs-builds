@@ -34,29 +34,29 @@ jobs:
   - script: sudo chroot rootfs /debootstrap/debootstrap --second-stage --verbose
     displayName: Manually setting up debootstrap
   
-  - script: curl "https://salsa.debian.org/rhaist-guest/WSL/raw/master/linux_files/profile" -so rootfs/etc/profile
+  - script: sudo curl https://salsa.debian.org/rhaist-guest/WSL/raw/master/linux_files/profile -so rootfs/etc/profile
     displayName: 'Installing default` profile'
   
-  - script: curl "https://raw.githubusercontent.com/WhitewaterFoundry/Pengwin/master/linux_files/setup" -so rootfs/etc/setup
+  - script: sudo curl https://raw.githubusercontent.com/WhitewaterFoundry/Pengwin/master/linux_files/setup -so rootfs/etc/setup
     displayName: 'Installing Pengwin bootstrap script'
   
-  - script: chroot rootfs/ /bin/bash -c "bash /etc/setup --silent --install"
+  - script: sudo chroot rootfs/ /bin/bash -c "bash /etc/setup --silent --install"
     displayName: 'Running Pengwin bootstrap script'
   
   - script: |
-      chroot rootfs/ /bin/bash -c "echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen && locale-gen"
-      chroot rootfs/ /bin/bash -c "update-locale LANGUAGE=en_US.UTF-8 LC_ALL=C"
+      sudo chroot rootfs/ /bin/bash -c "echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen && locale-gen"
+      sudo chroot rootfs/ /bin/bash -c "update-locale LANGUAGE=en_US.UTF-8 LC_ALL=C"
     displayName: 'Configuring language settings'
   
   - script: |
-      chroot rootfs/ /bin/bash -c "echo 'Defaults lecture_file = /etc/sudoers.lecture' >> /etc/sudoers"
-      chroot rootfs/ /bin/bash -c "echo 'Enter your UNIX password below. This is not your Windows password.' > /etc/sudoers.lecture"
+      sudo chroot rootfs/ /bin/bash -c "echo 'Defaults lecture_file = /etc/sudoers.lecture' >> /etc/sudoers"
+      sudo chroot rootfs/ /bin/bash -c "echo 'Enter your UNIX password below. This is not your Windows password.' > /etc/sudoers.lecture"
     displayName: 'Configuring sudo message'
   
   - script: |
-      chroot rootfs/ apt-get -y -q remove systemd dmidecode --allow-remove-essential
-      chroot rootfs/ apt-get -y -q autoremove
-      chroot rootfs/ apt-get -y -q clean
+      sudo chroot rootfs/ apt-get -y -q remove systemd dmidecode --allow-remove-essential
+      sudo chroot rootfs/ apt-get -y -q autoremove
+      sudo chroot rootfs/ apt-get -y -q clean
     displayName: 'Clean up apt cache'
   
   - script: sudo rm rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
