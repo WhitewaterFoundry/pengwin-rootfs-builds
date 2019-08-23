@@ -3,8 +3,8 @@
 echo "Setting github_release_tag to $github_release_tag";
 github_release_tag=$(date +%b-%y);
 
-echo "Setting drop_folder to drop"
-drop_folder = "drop"
+echo "Setting drop_folder to drop";
+drop_folder="drop";
 
 echo "Creating draft release at Github"
 json_create_release="{\"tag_name\": \"$github_release_tag\",\"target_commitish\": \"master\",\"name\": \"$github_release_tag\",\"body\": \"Build as of $github_release_tag\",\"draft\": true, \"prerelease\": false}";
