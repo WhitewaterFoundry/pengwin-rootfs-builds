@@ -13,7 +13,7 @@ jobs:
   - script: mkdir rootfs
     displayName: 'Creating rootfs folder'
 
-  - script: sudo debootstrap --foreign --verbose --arch=$(PREBOOTSTRAP_ARCH) --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,man,less,curl,bash-completion,vim $(PREBOOTSTRAP_RELEASE) ./rootfs/ http://deb.debian.org/debian 
+  - script: sudo debootstrap --foreign --verbose --arch=$(PREBOOTSTRAP_ARCH) --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim $(PREBOOTSTRAP_RELEASE) ./rootfs/ http://deb.debian.org/debian 
     displayName: 'Using debootstrap to create rootfs'
   
   - script: |
