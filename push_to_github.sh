@@ -3,12 +3,9 @@
 echo "Setting github_release_tag to $github_release_tag";
 github_release_tag=$(date +%b-%y);
 
-echo "Setting drop_folder to drop";
-drop_folder="drop";
-
 echo "Creating draft release at Github"
 json_create_release="{\"tag_name\": \"$github_release_tag\",\"target_commitish\": \"master\",\"name\": \"$github_release_tag\",\"body\": \"Build as of $github_release_tag\",\"draft\": true, \"prerelease\": false}";
-create_release_url="https://api.github.com/repos/sirredbeard/pengwin-rootfs-builds/releases";
+create_release_url="https://api.github.com/repos/$BUILD_REPOSITORY_NAME/releases";
 github_response=$(curl --request POST -H "Content-Type: application/json" -H "Authorization: token $GITHUB_PAT" --data "$json_create_release" $create_release_url);
 
 echo "Parsing Github response"
@@ -18,7 +15,8 @@ github_assets_url=${github_assets_url_template%"{?name,label}"};
 echo "Release ID: $github_release_id";
 echo "Retrieved assets URL for later: $github_assets_url";
 
-drop_folder="$SYSTEM_ARTIFACTSDIRECTORY/_sirredbeard.pengwin-rootfs-builds";
+drop_folder="$SYSTEM_ARTIFACTSDIRECTORY/$RELEASE_PRIMARYARTIFACTSOURCEALIAS/drop/";
+
 echo "Assets to upload:";
 ls $drop_folder;
 for filename in $drop_folder/*.tar.gz
