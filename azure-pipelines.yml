@@ -2,10 +2,7 @@ trigger:
 - master
 
 jobs:
-- template: debootstrap_architecture_template.yml
-  parameters:
-    arch: amd64
-    qemu_arch: x86_64
+
 - template: debootstrap_architecture_template.yml
   parameters:
     arch: arm64
