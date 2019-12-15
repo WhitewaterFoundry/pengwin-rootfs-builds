@@ -7,7 +7,9 @@ jobs:
     PREBOOTSTRAP_QEMU_ARCH: ${{ parameters.qemu_arch }}
     PREBOOTSTRAP_RELEASE: testing
   steps:
-  - script: sudo apt-get install -y curl gnupg debootstrap qemu-user-static
+  - script: |
+      sudo apt-get -y -q update
+      sudo apt-get -y -q install -y curl gnupg debootstrap qemu-user-static
     displayName: 'Installing build dependencies'
 
   - script: mkdir rootfs
