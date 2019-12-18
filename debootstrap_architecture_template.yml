@@ -1,7 +1,6 @@
 jobs:
 - job: ${{ parameters.arch }}
-  pool:
-    vmImage: ip-172-31-24-191
+
   variables:
     PREBOOTSTRAP_ARCH: ${{ parameters.arch }}
     PREBOOTSTRAP_QEMU_ARCH: ${{ parameters.qemu_arch }}
