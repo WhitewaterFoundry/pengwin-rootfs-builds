@@ -12,9 +12,9 @@ jobs:
   - script: mkdir rootfs
     displayName: 'Creating rootfs folder'
 
-  - script: sudo debootstrap --foreign --verbose --arch=$(PREBOOTSTRAP_ARCH) --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim $(PREBOOTSTRAP_RELEASE) ./rootfs/ http://deb.debian.org/debian 
+  - script: sudo debootstrap --foreign --verbose --arch=$(PREBOOTSTRAP_ARCH) --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat $(PREBOOTSTRAP_RELEASE) ./rootfs/ http://deb.debian.org/debian
     displayName: 'Using debootstrap to create rootfs'
-  
+
   - script: |
       cd rootfs;
       sudo mount --bind /dev dev/
@@ -23,46 +23,57 @@ jobs:
       sudo mount --bind /dev/pts dev/pts/
       cd ..;
     displayName: 'Entering chroot to mount dev, sys, proc and dev/pts'
-   
+
   - script: sudo cp /usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static rootfs/usr/bin/;
     displayName: Copy static QEMU to rootfs
-  
+
   - script: sudo chmod +x rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
     displayName: Marking static [rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static] as executable
-  
+
   - script: sudo chroot rootfs /debootstrap/debootstrap --second-stage --verbose
     displayName: Manually setting up debootstrap
-  
+
   - script: sudo curl https://salsa.debian.org/rhaist-guest/WSL/raw/master/linux_files/profile -so rootfs/etc/profile
     displayName: 'Installing default` profile'
-  
+
   - script: sudo curl https://raw.githubusercontent.com/WhitewaterFoundry/Pengwin/master/linux_files/setup -so rootfs/etc/setup
     displayName: 'Installing Pengwin bootstrap script'
-  
+
   - script: sudo chroot rootfs/ /bin/bash -c "bash /etc/setup --silent --install"
     displayName: 'Running Pengwin bootstrap script'
-  
+
   - script: |
       sudo chroot rootfs/ /bin/bash -c "echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen && locale-gen"
       sudo chroot rootfs/ /bin/bash -c "update-locale LANGUAGE=en_US.UTF-8 LC_ALL=C"
     displayName: 'Configuring language settings'
-  
+
   - script: |
       sudo chroot rootfs/ /bin/bash -c "echo 'Defaults lecture_file = /etc/sudoers.lecture' >> /etc/sudoers"
       sudo chroot rootfs/ /bin/bash -c "echo 'Enter your UNIX password below. This is not your Windows password.' > /etc/sudoers.lecture"
     displayName: 'Configuring sudo message'
-  
+
   - script: |
       sudo chroot rootfs/ apt-get -y -q remove systemd dmidecode --allow-remove-essential
       sudo chroot rootfs/ apt-get -y -q autoremove
       sudo chroot rootfs/ apt-get -y -q clean
     displayName: 'Clean up apt cache'
-  
+
+  - script: |
+      sudo chroot rootfs/ /bin/bash -c "echo 'source /etc/vim/vimrc' > /etc/skel/.vimrc"
+      sudo chroot rootfs/ /bin/bash -c "echo 'set background=dark' >> /etc/skel/.vimrc"
+      sudo chroot rootfs/ /bin/bash -c "echo 'set visualbell' >> /etc/skel/.vimrc"
+      sudo chroot rootfs/ /bin/bash -c "echo 'set noerrorbells' >> /etc/skel/.vimrc"
+      sudo chroot rootfs/ /bin/bash -c "echo '\$include /etc/inputrc' > /etc/skel/.inputrc"
+      sudo chroot rootfs/ /bin/bash -c "echo 'set bell-style none' >> /etc/skel/.inputrc"
+      sudo chroot rootfs/ /bin/bash -c "echo 'set show-all-if-ambiguous on' >> /etc/skel/.inputrc"
+      sudo chroot rootfs/ /bin/bash -c "echo 'set show-all-if-unmodified on' >> /etc/skel/.inputrc"
+    displayName: 'Add defaults for readline and vim'
+
   - script: sudo rm rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
     displayName: Deleting QEMU from chroot
-    
+
   - script: cd rootfs && sudo tar -zcvf $(Build.ArtifactStagingDirectory)/install_$(PREBOOTSTRAP_ARCH)_rootfs.tar.gz *
     displayName: 'Compressing rootfs'
 
   - task: PublishBuildArtifacts@1
-  
+
