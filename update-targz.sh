@@ -44,6 +44,7 @@ sudo chroot rootfs/ apt-get -y -q clean
 
 echo 'Add defaults for readline and vim'
 sudo chroot rootfs/ /bin/bash -c "echo 'source /etc/vim/vimrc' > /etc/skel/.vimrc"
+sudo chroot rootfs/ /bin/bash -c "echo 'syntax on' >> /etc/skel/.vimrc"
 sudo chroot rootfs/ /bin/bash -c "echo 'set background=dark' >> /etc/skel/.vimrc"
 sudo chroot rootfs/ /bin/bash -c "echo 'set visualbell' >> /etc/skel/.vimrc"
 sudo chroot rootfs/ /bin/bash -c "echo 'set noerrorbells' >> /etc/skel/.vimrc"
