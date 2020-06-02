@@ -16,6 +16,11 @@ echo 'Extract previous rootfs, entering chroot to mount dev, sys, proc and dev/p
   # shellcheck disable=SC2164
   cd rootfs
   sudo tar -zxvf /vagrant/build/install_"${PREBOOTSTRAP_ARCH}"_rootfs.tar.gz
+
+  sudo mkdir -p sys
+  sudo mkdir -p proc
+  sudo mkdir -p dev/pts
+
   sudo mount --bind /dev dev/
   sudo mount --bind /sys sys/
   sudo mount --bind /proc proc/
@@ -34,6 +39,10 @@ sudo cp /etc/resolv.conf rootfs/etc/
 echo 'Upgrade packages and install more'
 sudo chroot rootfs/ apt-get -y -q update
 sudo chroot rootfs/ apt-get -y -q install man-db socat
+sudo chroot rootfs/ apt-get -y -q upgrade
+
+echo 'Run again in case of a change in sources'
+sudo chroot rootfs/ apt-get -y -q update
 sudo chroot rootfs/ apt-get -y -q upgrade
 
 echo 'Clean up apt cache'

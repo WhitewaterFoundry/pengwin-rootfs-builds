@@ -6,6 +6,7 @@ export PREBOOTSTRAP_RELEASE="${3:-testing}"
 
 echo 'Installing build dependencies'
 sudo apt-get update -y -q
+sudo apt-get upgrade -y -q
 sudo apt-get install -y -q curl gnupg debootstrap qemu-user-static
 
 echo 'Creating rootfs folder'
