@@ -11,7 +11,7 @@ jobs:
       sudo apt-get update -y -q
       sudo apt-get install -y curl gnupg debootstrap qemu-user-static
       wget http://ftp.us.debian.org/debian/pool/main/d/debootstrap/debootstrap_1.0.123_all.deb
-      sudo apt install ./debootstrap_1.0.123ubuntu1_all.deb
+      sudo apt install ./debootstrap_1.0.123_all.deb
     displayName: 'Installing build dependencies'
 
   - script: mkdir rootfs
