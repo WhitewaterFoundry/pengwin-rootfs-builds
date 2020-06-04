@@ -15,6 +15,15 @@ mkdir rootfs
 echo 'Using debootstrap to create rootfs'
 sudo debootstrap --foreign --verbose --arch="${PREBOOTSTRAP_ARCH}" --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat "${PREBOOTSTRAP_RELEASE}" ./rootfs/ http://deb.debian.org/debian
 
+echo 'Copy static QEMU to rootfs'
+sudo cp /usr/bin/qemu-"${PREBOOTSTRAP_QEMU_ARCH}"-static rootfs/usr/bin/
+
+echo "Marking static [rootfs/usr/bin/qemu-${PREBOOTSTRAP_QEMU_ARCH}-static] as executable"
+sudo chmod +x rootfs/usr/bin/qemu-"${PREBOOTSTRAP_QEMU_ARCH}"-static
+
+echo 'Manually setting up debootstrap'
+sudo chroot rootfs /debootstrap/debootstrap --second-stage --verbose
+
 echo 'Entering chroot to mount dev, sys, proc and dev/pts'
 (
   # shellcheck disable=SC2164
@@ -24,15 +33,6 @@ echo 'Entering chroot to mount dev, sys, proc and dev/pts'
   sudo mount --bind /proc proc/
   sudo mount --bind /dev/pts dev/pts/
 )
-
-echo 'Copy static QEMU to rootfs'
-sudo cp /usr/bin/qemu-"${PREBOOTSTRAP_QEMU_ARCH}"-static rootfs/usr/bin/
-
-echo "Marking static [rootfs/usr/bin/qemu-${PREBOOTSTRAP_QEMU_ARCH}-static] as executable"
-sudo chmod +x rootfs/usr/bin/qemu-"${PREBOOTSTRAP_QEMU_ARCH}"-static
-
-echo 'Manually setting up debootstrap'
-sudo chroot rootfs /debootstrap/debootstrap --second-stage --verbose
 
 echo 'Installing default profile'
 sudo curl https://salsa.debian.org/rhaist-guest/WSL/raw/master/linux_files/profile -so rootfs/etc/profile
