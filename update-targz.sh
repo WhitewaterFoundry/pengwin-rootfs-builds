@@ -38,7 +38,7 @@ sudo cp /etc/resolv.conf rootfs/etc/
 
 echo 'Upgrade packages and install more'
 sudo chroot rootfs/ apt-get -y -q update
-sudo chroot rootfs/ apt-get -y -q install man-db socat
+sudo chroot rootfs/ apt-get -y -q install man-db socat gcc-9-base
 sudo chroot rootfs/ apt-get -y -q upgrade
 
 echo 'Run again in case of a change in sources'
