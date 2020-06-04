@@ -15,7 +15,7 @@ jobs:
   - script: mkdir rootfs
     displayName: 'Creating rootfs folder'
 
-  - script: sudo debootstrap --foreign --verbose --arch=$(PREBOOTSTRAP_ARCH) $(PREBOOTSTRAP_RELEASE) ./rootfs/
+  - script: sudo debootstrap --foreign --verbose --arch=$(PREBOOTSTRAP_ARCH) --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat $(PREBOOTSTRAP_RELEASE) ./rootfs/
     displayName: 'Using debootstrap to create rootfs'
 
   - script: sudo cp /usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static rootfs/usr/bin/;
