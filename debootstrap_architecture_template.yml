@@ -20,15 +20,6 @@ jobs:
   - script: sudo debootstrap --foreign --verbose --arch=$(PREBOOTSTRAP_ARCH) --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat $(PREBOOTSTRAP_RELEASE) ./rootfs/
     displayName: 'Using debootstrap to create rootfs'
 
-  - script: sudo cp /usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static rootfs/usr/bin/;
-    displayName: Copy static QEMU to rootfs
-
-  - script: sudo chmod +x rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
-    displayName: Marking static [rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static] as executable
-
-  - script: sudo chroot rootfs /debootstrap/debootstrap --second-stage --verbose
-    displayName: Manually setting up debootstrap
-
   - script: |
       cd rootfs;
       sudo mount --bind /dev dev/
@@ -37,6 +28,15 @@ jobs:
       sudo mount --bind /dev/pts dev/pts/
       cd ..;
     displayName: 'Entering chroot to mount dev, sys, proc and dev/pts'
+
+  - script: sudo cp /usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static rootfs/usr/bin/;
+    displayName: Copy static QEMU to rootfs
+
+  - script: sudo chmod +x rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
+    displayName: Marking static [rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static] as executable
+
+  - script: sudo chroot rootfs /debootstrap/debootstrap --second-stage --verbose
+    displayName: Manually setting up debootstrap
 
   - script: sudo curl https://salsa.debian.org/rhaist-guest/WSL/raw/master/linux_files/profile -so rootfs/etc/profile
     displayName: 'Installing default` profile'
@@ -78,7 +78,7 @@ jobs:
   - script: sudo rm rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
     displayName: Deleting QEMU from chroot
 
-  - script: cd rootfs && sudo tar -zcvf $(Build.ArtifactStagingDirectory)/install_$(PREBOOTSTRAP_ARCH)_rootfs.tar.gz *
+  - script: cd rootfs && sudo tar -zcvf $(Build.ArtifactStagingDirectory)/install_$(PREBOOTSTRAP_ARCH)_rootfs.tar.gz --exclude proc --exclude dev --exclude sys --exclude='boot/*' *
     displayName: 'Compressing rootfs'
 
   - task: PublishBuildArtifacts@1
