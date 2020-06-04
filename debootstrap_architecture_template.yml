@@ -5,7 +5,7 @@ jobs:
   variables:
     PREBOOTSTRAP_ARCH: ${{ parameters.arch }}
     PREBOOTSTRAP_QEMU_ARCH: ${{ parameters.qemu_arch }}
-    PREBOOTSTRAP_RELEASE: unstable
+    PREBOOTSTRAP_RELEASE: buster
   steps:
   - script: |
       sudo apt-get update -y -q
