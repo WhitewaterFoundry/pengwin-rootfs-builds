@@ -5,11 +5,13 @@ jobs:
   variables:
     PREBOOTSTRAP_ARCH: ${{ parameters.arch }}
     PREBOOTSTRAP_QEMU_ARCH: ${{ parameters.qemu_arch }}
-    PREBOOTSTRAP_RELEASE: buster
+    PREBOOTSTRAP_RELEASE: bullseye
   steps:
   - script: |
       sudo apt-get update -y -q
       sudo apt-get install -y curl gnupg debootstrap qemu-user-static
+      wget http://mirrors.kernel.org/ubuntu/pool/main/d/debootstrap/debootstrap_1.0.123ubuntu1_all.deb
+      sudo apt install ./debootstrap_1.0.123ubuntu1_all.deb
     displayName: 'Installing build dependencies'
 
   - script: mkdir rootfs
