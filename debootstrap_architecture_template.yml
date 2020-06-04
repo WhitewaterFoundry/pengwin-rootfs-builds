@@ -5,7 +5,7 @@ jobs:
   variables:
     PREBOOTSTRAP_ARCH: ${{ parameters.arch }}
     PREBOOTSTRAP_QEMU_ARCH: ${{ parameters.qemu_arch }}
-    PREBOOTSTRAP_RELEASE: testing
+    PREBOOTSTRAP_RELEASE: bullseye
   steps:
   - script: |
       sudo apt-get update -y -q
@@ -19,15 +19,6 @@ jobs:
   - script: sudo debootstrap --foreign --verbose --arch=$(PREBOOTSTRAP_ARCH) --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat $(PREBOOTSTRAP_RELEASE) ./rootfs/ http://deb.debian.org/debian
     displayName: 'Using debootstrap to create rootfs'
 
-  - script: |
-      cd rootfs;
-      sudo mount --bind /dev dev/
-      sudo mount --bind /sys sys/
-      sudo mount --bind /proc proc/
-      sudo mount --bind /dev/pts dev/pts/
-      cd ..;
-    displayName: 'Entering chroot to mount dev, sys, proc and dev/pts'
-
   - script: sudo cp /usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static rootfs/usr/bin/;
     displayName: Copy static QEMU to rootfs
 
@@ -36,6 +27,15 @@ jobs:
 
   - script: sudo chroot rootfs /debootstrap/debootstrap --second-stage --verbose
     displayName: Manually setting up debootstrap
+
+  - script: |
+      cd rootfs;
+      sudo mount --bind /dev dev/
+      sudo mount --bind /sys sys/
+      sudo mount --bind /proc proc/
+      sudo mount --bind /dev/pts dev/pts/
+      cd ..;
+    displayName: 'Entering chroot to mount dev, sys, proc and dev/pts'
 
   - script: sudo curl https://salsa.debian.org/rhaist-guest/WSL/raw/master/linux_files/profile -so rootfs/etc/profile
     displayName: 'Installing default` profile'
