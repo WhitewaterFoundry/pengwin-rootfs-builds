@@ -1,8 +1,8 @@
 steps:
 - bash: |
-   wget https://raw.githubusercontent.com/WhitewaterFoundry/pengwin-rootfs-builds/master/push_to_github.sh
-   chmod u+x push_to_github.sh
-   ./push_to_github.sh
+   #wget https://raw.githubusercontent.com/WhitewaterFoundry/pengwin-rootfs-builds/master/push_to_github.sh
+   #chmod u+x push_to_github.sh
+   #./push_to_github.sh
   displayName: 'Bash Script'
   env:
     GITHUB_PAT: 
