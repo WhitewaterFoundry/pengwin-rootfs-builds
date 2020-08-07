@@ -1,7 +1,7 @@
 jobs:
 - job: ${{ parameters.arch }}
   pool:
-    vmImage: ubuntu-latest
+    vmImage: ubuntu-20.04
   variables:
     PREBOOTSTRAP_ARCH: ${{ parameters.arch }}
     PREBOOTSTRAP_QEMU_ARCH: ${{ parameters.qemu_arch }}
