@@ -5,13 +5,13 @@ jobs:
   variables:
     PREBOOTSTRAP_ARCH: ${{ parameters.arch }}
     PREBOOTSTRAP_QEMU_ARCH: ${{ parameters.qemu_arch }}
-    PREBOOTSTRAP_RELEASE: bullseye
+    PREBOOTSTRAP_RELEASE: sid
   steps:
   - script: |
       sudo apt-get update -y -q
       sudo apt-get install -y curl gnupg debootstrap qemu-user-static
-      wget http://ftp.us.debian.org/debian/pool/main/d/debootstrap/debootstrap_1.0.122_all.deb
-      sudo apt install ./debootstrap_1.0.122_all.deb
+      #wget http://ftp.us.debian.org/debian/pool/main/d/debootstrap/debootstrap_1.0.122_all.deb
+      #sudo apt install ./debootstrap_1.0.122_all.deb
     displayName: 'Installing build dependencies'
 
   - script: mkdir rootfs
