@@ -87,8 +87,6 @@ jobs:
   - script: cd rootfs && sudo tar -zcvf $(Build.ArtifactStagingDirectory)/install_$(PREBOOTSTRAP_ARCH)_rootfs.tar.gz --exclude proc --exclude dev --exclude sys --exclude='boot/*' ./*
     displayName: 'Compressing rootfs'
 
-  - task: PublishBuildArtifacts@1
-  
   - script: sudo cp /usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static rootfs/usr/bin/;
     displayName: Copy static QEMU to rootfs
 
@@ -98,8 +96,10 @@ jobs:
   - script: |
       sudo chroot rootfs/ /bin/bash -c "git clone https://github.com/WhitewaterFoundry/pengwin-setup.git"
       sudo chroot rootfs/ /bin/bash -c "cp -r pengwin-setup/tests /usr/local/pengwin-setup"
-      sudo chroot rootfs/ /bin/bash -c "cd /usr/local/pengwin-setup\tests && . ./install_shunit2.sh && ./run_tests.sh"
+      sudo chroot rootfs/ /bin/bash -c "cd /usr/local/pengwin-setup/tests && . ./install_shunit2.sh && ./run_tests.sh"
     displayName: Run unit tests
 
+  - task: PublishBuildArtifacts@1
+  
 
 
