@@ -22,6 +22,7 @@ jobs:
 
   - script: |
       cd rootfs;
+      sudo ls -l dev/pts/
       sudo mount --bind /dev dev/
       sudo mount --bind /sys sys/
       sudo mount --bind /proc proc/
