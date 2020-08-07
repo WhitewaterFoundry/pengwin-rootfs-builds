@@ -17,7 +17,7 @@ jobs:
   - script: mkdir rootfs
     displayName: 'Creating rootfs folder'
 
-  - script: sudo debootstrap --foreign --verbose --arch=$(PREBOOTSTRAP_ARCH) $(PREBOOTSTRAP_RELEASE) ./rootfs/
+  - script: sudo debootstrap --verbose --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat $(PREBOOTSTRAP_RELEASE) ./rootfs/
     displayName: 'Using debootstrap to create rootfs'
 
   - script: |
@@ -35,7 +35,7 @@ jobs:
   - script: sudo chmod +x rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
     displayName: Marking static [rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static] as executable
 
-  - script: sudo chroot rootfs/ /bin/bash -c "/debootstrap/debootstrap --second-stage --verbose"
+  - script: #sudo chroot rootfs/ /bin/bash -c "/debootstrap/debootstrap --second-stage --verbose"
     displayName: Manually setting up debootstrap
 
   - script: sudo curl https://salsa.debian.org/rhaist-guest/WSL/raw/master/linux_files/profile -so rootfs/etc/profile
