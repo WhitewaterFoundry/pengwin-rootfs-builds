@@ -92,7 +92,8 @@ sudo chmod +x rootfs/usr/bin/qemu-"${PREBOOTSTRAP_QEMU_ARCH}"-static
 
 sudo chroot rootfs/ /bin/bash -c "git clone https://github.com/WhitewaterFoundry/pengwin-setup.git"
 sudo chroot rootfs/ /bin/bash -c "cp -r pengwin-setup/tests /usr/local/bin/ && chmod -R +x /usr/local/bin/tests"
-sudo chroot rootfs/ /bin/bash -c "cd /usr/local/bin/tests && . ./install_shunit2.sh && ./run_tests.sh"
+sudo chroot rootfs/ /bin/bash -c "apt-get -y -q install shunit2"
+sudo chroot rootfs/ /bin/bash -c "cd /usr/local/bin/tests && ./run_tests.sh"
 
 mkdir -p /vagrant/build
 mv /vagrant/build/install_"${PREBOOTSTRAP_ARCH}"_rootfs.tar.gz /vagrant/build/install_"${PREBOOTSTRAP_ARCH}"_rootfs.tar.gz.bak
