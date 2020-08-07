@@ -17,7 +17,7 @@ jobs:
   - script: mkdir rootfs
     displayName: 'Creating rootfs folder'
 
-  - script: sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch=$(PREBOOTSTRAP_ARCH) --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat $(PREBOOTSTRAP_RELEASE) ./rootfs/"
+  - script: sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch=$(PREBOOTSTRAP_ARCH) --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat,gcc-9-base $(PREBOOTSTRAP_RELEASE) ./rootfs/"
     displayName: 'Using debootstrap to create rootfs'
 
   - script: |
@@ -40,9 +40,7 @@ jobs:
   - script: sudo chmod +x rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
     displayName: Marking static [rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static] as executable
 
-  - script: |
-      sudo chroot rootfs/ /bin/bash -c "/debootstrap/debootstrap --second-stage --verbose" || echo "Failed"
-      sudo chroot rootfs/ apt-get install -f
+  - script: sudo chroot rootfs/ /bin/bash -c "/debootstrap/debootstrap --second-stage --verbose"
     displayName: Manually setting up debootstrap
 
   - script: sudo curl https://salsa.debian.org/rhaist-guest/WSL/raw/master/linux_files/profile -so rootfs/etc/profile
@@ -67,6 +65,7 @@ jobs:
   - script: |
       sudo chroot rootfs/ apt-get -y -q remove systemd dmidecode --allow-remove-essential
       sudo chroot rootfs/ apt-get -y -q autoremove
+      sudo chroot rootfs/ apt-get -y -q autoclean
       sudo chroot rootfs/ apt-get -y -q clean
     displayName: 'Clean up apt cache'
 
@@ -85,7 +84,7 @@ jobs:
   - script: sudo rm rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
     displayName: Deleting QEMU from chroot
 
-  - script: cd rootfs && sudo tar -zcvf $(Build.ArtifactStagingDirectory)/install_$(PREBOOTSTRAP_ARCH)_rootfs.tar.gz --exclude proc --exclude dev --exclude sys --exclude='boot/*' *
+  - script: cd rootfs && sudo tar -zcvf $(Build.ArtifactStagingDirectory)/install_$(PREBOOTSTRAP_ARCH)_rootfs.tar.gz --exclude proc --exclude dev --exclude sys --exclude='boot/*' ./*
     displayName: 'Compressing rootfs'
 
   - task: PublishBuildArtifacts@1
