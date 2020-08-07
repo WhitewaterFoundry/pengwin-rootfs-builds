@@ -10,14 +10,14 @@ jobs:
   - script: |
       sudo apt-get update -y -q
       sudo apt-get install -y curl gnupg debootstrap qemu-user-static
-      wget http://ftp.us.debian.org/debian/pool/main/d/debootstrap/debootstrap_1.0.123_all.deb
-      sudo apt install ./debootstrap_1.0.123_all.deb
+      #wget http://ftp.us.debian.org/debian/pool/main/d/debootstrap/debootstrap_1.0.123_all.deb
+      #sudo apt install ./debootstrap_1.0.123_all.deb
     displayName: 'Installing build dependencies'
 
   - script: mkdir rootfs
     displayName: 'Creating rootfs folder'
 
-  - script: sudo debootstrap --foreign --verbose --arch=$(PREBOOTSTRAP_ARCH) --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat $(PREBOOTSTRAP_RELEASE) ./rootfs/
+  - script: sudo debootstrap --foreign --verbose --arch=$(PREBOOTSTRAP_ARCH) $(PREBOOTSTRAP_RELEASE) ./rootfs/
     displayName: 'Using debootstrap to create rootfs'
 
   - script: |
