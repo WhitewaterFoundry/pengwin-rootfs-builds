@@ -17,7 +17,7 @@ jobs:
   - script: mkdir rootfs
     displayName: 'Creating rootfs folder'
 
-  - script: sudo bash -c "debootstrap --verbose --foreign --arch=$(PREBOOTSTRAP_ARCH) --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat $(PREBOOTSTRAP_RELEASE) ./rootfs/"
+  - script: sudo bash -c "debootstrap --verbose --foreign --arch=$(PREBOOTSTRAP_ARCH) --exclude=systemd --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat $(PREBOOTSTRAP_RELEASE) ./rootfs/"
     displayName: 'Using debootstrap to create rootfs'
 
   - script: |
@@ -36,7 +36,6 @@ jobs:
     displayName: Marking static [rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static] as executable
 
   - script: |
-      sudo chroot rootfs/ apt-get -y -q remove systemd dmidecode --allow-remove-essential
       sudo chroot rootfs/ /bin/bash -c "/debootstrap/debootstrap --second-stage --verbose" || echo "Failed"
       sudo chroot rootfs/ apt-get install -f
     displayName: Manually setting up debootstrap
