@@ -36,7 +36,7 @@ jobs:
     displayName: Marking static [rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static] as executable
 
   - script: |
-      sudo chroot rootfs/ /bin/bash -c "ls -l /var"
+      sudo chroot rootfs/ apt-get -y -q remove systemd dmidecode --allow-remove-essential
       sudo chroot rootfs/ /bin/bash -c "/debootstrap/debootstrap --second-stage --verbose" || echo "Failed"
       sudo chroot rootfs/ apt-get install -f
     displayName: Manually setting up debootstrap
