@@ -47,10 +47,14 @@ Vagrant.configure("2") do |config|
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
+  # Example for Hyper-V:
   #
   config.vm.provider "hyperv" do |h|
     h.enable_virtualization_extensions = true,
+    h.enable_automatic_checkpoints = false,
+    h.maxmemory = 4096,
+    h.memory = 2048,
+    h.cpus = 3,
     h.vm_integration_services = {
       guest_service_interface: true
     }

@@ -9,13 +9,14 @@ sudo apt-get update -y -q
 sudo apt-get install -y -q curl gnupg debootstrap qemu-user-static
 
 echo 'Creating rootfs folder'
+sudo rm -rf rootfs
 mkdir rootfs
 
 echo 'Extract previous rootfs, entering chroot to mount dev, sys, proc and dev/pts'
 (
   # shellcheck disable=SC2164
   cd rootfs
-  sudo tar -zxvf /vagrant/build/install_"${PREBOOTSTRAP_ARCH}"_rootfs.tar.gz
+  sudo tar -zxvf /vagrant/build/install_"${PREBOOTSTRAP_ARCH}"_rootfs.tar.gz >/dev/null
 
   sudo mkdir -p sys
   sudo mkdir -p proc
@@ -39,11 +40,12 @@ sudo cp /etc/resolv.conf rootfs/etc/
 echo 'Upgrade packages and install more'
 sudo chroot rootfs/ apt-get -y -q update
 sudo chroot rootfs/ apt-get -y -q install man-db socat gcc-9-base
-sudo chroot rootfs/ apt-get -y -q upgrade
+sudo chroot rootfs/ /bin/bash -c "yes 'N' | apt-get -y -q upgrade"
 
 echo 'Run again in case of a change in sources'
 sudo chroot rootfs/ apt-get -y -q update
-sudo chroot rootfs/ apt-get -y -q upgrade
+sudo chroot rootfs/ /bin/bash -c "yes 'N' | apt-get -y -q dist-upgrade"
+sudo chroot rootfs/ apt-get install -q -y --allow-downgrades libc6=2.31-1.wsl
 
 echo 'Clean up apt cache'
 sudo chroot rootfs/ apt-get -y -q remove systemd dmidecode --allow-remove-essential
@@ -66,10 +68,12 @@ echo 'Deleting QEMU from chroot'
 sudo rm rootfs/usr/bin/qemu-"${PREBOOTSTRAP_QEMU_ARCH}"-static
 
 echo 'Compressing rootfs'
+mkdir -p /vagrant/build
 rm /vagrant/build/install_"${PREBOOTSTRAP_ARCH}"_rootfs.tar.gz.bak
 mv /vagrant/build/install_"${PREBOOTSTRAP_ARCH}"_rootfs.tar.gz /vagrant/build/install_"${PREBOOTSTRAP_ARCH}"_rootfs.tar.gz.bak
 (
   # shellcheck disable=SC2164
   cd rootfs
-  sudo tar -zcvf /vagrant/build/install_"${PREBOOTSTRAP_ARCH}"_rootfs.tar.gz --exclude proc --exclude dev --exclude sys ./*
+  sudo tar -zcvf /vagrant/build/install_"${PREBOOTSTRAP_ARCH}"_rootfs.tar.gz --exclude proc --exclude dev --exclude sys --exclude='boot/*' ./* >/dev/null
 )
+

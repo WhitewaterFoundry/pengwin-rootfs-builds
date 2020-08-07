@@ -9,10 +9,11 @@ sudo apt-get update -y -q
 sudo apt-get install -y -q curl gnupg debootstrap qemu-user-static
 
 echo 'Creating rootfs folder'
+sudo rm -rf rootfs
 mkdir rootfs
 
 echo 'Using debootstrap to create rootfs'
-sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch=$(PREBOOTSTRAP_ARCH) --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat,gcc-9-base,iputils-ping $(PREBOOTSTRAP_RELEASE) ./rootfs/"
+sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch=${PREBOOTSTRAP_ARCH} --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat,gcc-9-base,iputils-ping ${PREBOOTSTRAP_RELEASE} ./rootfs/"
 
 echo 'Entering chroot to mount dev, sys, proc and dev/pts'
 (
@@ -22,7 +23,7 @@ echo 'Entering chroot to mount dev, sys, proc and dev/pts'
   sudo mkdir -p sys
   sudo mkdir -p proc
   sudo mkdir -p dev/pts
-    
+
   sudo mount --bind /dev dev/
   sudo mount --bind /sys sys/
   sudo mount --bind /proc proc/
@@ -57,6 +58,8 @@ sudo chroot rootfs/ /bin/bash -c "echo 'Enter your UNIX password below. This is 
 
 echo 'Clean up apt cache'
 sudo chroot rootfs/ apt-get -y -q remove systemd dmidecode --allow-remove-essential
+sudo chroot rootfs/ /bin/bash -c "yes 'N' | apt-get -y -q dist-upgrade"
+sudo chroot rootfs/ apt-get install -q -y --allow-downgrades libc6=2.31-1.wsl
 sudo chroot rootfs/ apt-get -y -q autoremove
 sudo chroot rootfs/ apt-get -y -q autoclean
 sudo chroot rootfs/ apt-get -y -q clean
@@ -76,8 +79,22 @@ echo 'Deleting QEMU from chroot'
 sudo rm rootfs/usr/bin/qemu-"${PREBOOTSTRAP_QEMU_ARCH}"-static
 
 echo 'Compressing rootfs'
-mkdir -p /vagrant/build
 (
+  # shellcheck disable=SC2164
   cd rootfs
-  sudo tar -zcvf /vagrant/build/install_"${PREBOOTSTRAP_ARCH}"_rootfs.tar.gz --exclude proc --exclude dev --exclude sys --exclude='boot/*' ./*
+  rm ../install_"${PREBOOTSTRAP_ARCH}"_rootfs.tar.gz
+  sudo tar -zcvf ../install_"${PREBOOTSTRAP_ARCH}"_rootfs.tar.gz --exclude proc --exclude dev --exclude sys --exclude='boot/*' ./* >/dev/null
 )
+
+echo 'Run tests'
+sudo cp /usr/bin/qemu-"${PREBOOTSTRAP_QEMU_ARCH}"-static rootfs/usr/bin/
+sudo chmod +x rootfs/usr/bin/qemu-"${PREBOOTSTRAP_QEMU_ARCH}"-static
+
+sudo chroot rootfs/ /bin/bash -c "git clone https://github.com/WhitewaterFoundry/pengwin-setup.git"
+sudo chroot rootfs/ /bin/bash -c "cp -r pengwin-setup/tests /usr/local/bin/ && chmod -R +x /usr/local/bin/tests"
+sudo chroot rootfs/ /bin/bash -c "cd /usr/local/bin/tests && . ./install_shunit2.sh && ./run_tests.sh"
+
+mkdir -p /vagrant/build
+mv /vagrant/build/install_"${PREBOOTSTRAP_ARCH}"_rootfs.tar.gz /vagrant/build/install_"${PREBOOTSTRAP_ARCH}"_rootfs.tar.gz.bak
+mv install_"${PREBOOTSTRAP_ARCH}"_rootfs.tar.gz /vagrant/build/
+

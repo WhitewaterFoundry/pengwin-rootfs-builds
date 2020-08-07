@@ -62,6 +62,8 @@ jobs:
 
   - script: |
       sudo chroot rootfs/ apt-get -y -q remove systemd dmidecode --allow-remove-essential
+      sudo chroot rootfs/ /bin/bash -c "yes 'N' | apt-get -y -q dist-upgrade"
+      sudo chroot rootfs/ apt-get install -q -y --allow-downgrades libc6=2.31-1.wsl
       sudo chroot rootfs/ apt-get -y -q autoremove
       sudo chroot rootfs/ apt-get -y -q autoclean
       sudo chroot rootfs/ apt-get -y -q clean
