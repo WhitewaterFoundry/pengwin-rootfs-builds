@@ -44,7 +44,7 @@ jobs:
     displayName: Manually setting up debootstrap
 
   - script: sudo curl https://salsa.debian.org/rhaist-guest/WSL/raw/master/linux_files/profile -so rootfs/etc/profile
-    displayName: 'Installing default` profile'
+    displayName: 'Installing default profile'
 
   - script: sudo curl https://raw.githubusercontent.com/WhitewaterFoundry/Pengwin/master/linux_files/setup -so rootfs/etc/setup
     displayName: 'Installing Pengwin bootstrap script'
