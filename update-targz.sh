@@ -45,7 +45,7 @@ sudo chroot rootfs/ /bin/bash -c "yes 'N' | apt-get -y -q upgrade"
 echo 'Run again in case of a change in sources'
 sudo chroot rootfs/ apt-get -y -q update
 sudo chroot rootfs/ /bin/bash -c "yes 'N' | apt-get -y -q dist-upgrade"
-sudo chroot rootfs/ apt-get install -q -y --allow-downgrades libc6=2.31-1.wsl
+sudo chroot rootfs/ apt-get install -q -y --allow-downgrades libc6=2.31-1.wsl locales=2.31-1.wsl libc-bin=2.31-1.wsl
 
 echo 'Clean up apt cache'
 sudo chroot rootfs/ apt-get -y -q remove systemd dmidecode --allow-remove-essential
