@@ -87,18 +87,18 @@ jobs:
   - script: cd rootfs && sudo tar -zcvf $(Build.ArtifactStagingDirectory)/install_$(PREBOOTSTRAP_ARCH)_rootfs.tar.gz --exclude proc --exclude dev --exclude sys --exclude='boot/*' ./*
     displayName: 'Compressing rootfs'
 
-#  - script: sudo cp /usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static rootfs/usr/bin/;
-#    displayName: Copy static QEMU to rootfs
-#
-#  - script: sudo chmod +x rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
-#    displayName: Marking static [rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static] as executable
-#
-#  - script: |
-#      sudo chroot rootfs/ /bin/bash -c "git clone https://github.com/WhitewaterFoundry/pengwin-setup.git"
-#      sudo chroot rootfs/ /bin/bash -c "cp -r pengwin-setup/tests /usr/local/bin/ && chmod -R +x /usr/local/bin/tests"
-#      sudo chroot rootfs/ /bin/bash -c "apt-get -y -q install shunit2"
-#      sudo chroot rootfs/ /bin/bash -c "cd /usr/local/bin/tests && ./run_tests.sh"
-#    displayName: Run unit tests
+  - script: sudo cp /usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static rootfs/usr/bin/;
+    displayName: Copy static QEMU to rootfs
+
+  - script: sudo chmod +x rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
+    displayName: Marking static [rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static] as executable
+
+  - script: |
+      sudo chroot rootfs/ /bin/bash -c "git clone https://github.com/WhitewaterFoundry/pengwin-setup.git"
+      sudo chroot rootfs/ /bin/bash -c "cp -r pengwin-setup/tests /usr/local/bin/ && chmod -R +x /usr/local/bin/tests"
+      sudo chroot rootfs/ /bin/bash -c "apt-get -y -q install shunit2"
+      sudo chroot rootfs/ /bin/bash -c "cd /usr/local/bin/tests && ./run_tests.sh"
+    displayName: Run unit tests
 
   - task: PublishBuildArtifacts@1
   
