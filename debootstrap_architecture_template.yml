@@ -1,3 +1,6 @@
+variables:
+- name: selectedArch
+  value: ${{ parameters.selectedArch }} 
 jobs:
 - job: ${{ parameters.arch }}
   condition: or(eq(parameters.selectedArch, arch"),eq(parameters.selectedArch, ''))
