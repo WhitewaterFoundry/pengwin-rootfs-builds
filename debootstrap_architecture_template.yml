@@ -1,15 +1,13 @@
-variables:
-- name: selectedArch
-  value: ${{ parameters.selectedArch }} 
 jobs:
 - job: ${{ parameters.arch }}
-  condition: or(eq(parameters.selectedArch, arch"),eq(parameters.selectedArch, ''))
+  condition: or(eq(variables.selectedArch, arch"),eq(variables.selectedArch, ''))
   pool:
     vmImage: ubuntu-20.04
   variables:
     PREBOOTSTRAP_ARCH: ${{ parameters.arch }}
     PREBOOTSTRAP_QEMU_ARCH: ${{ parameters.qemu_arch }}
     PREBOOTSTRAP_RELEASE: bullseye
+    selectedArch: ${{ parameters.selectedArch }} 
   steps:
   - script: |
       sudo apt-get update -y -q
