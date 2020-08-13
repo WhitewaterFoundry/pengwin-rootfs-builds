@@ -1,6 +1,6 @@
 jobs:
 - job: ${{ parameters.arch }}
-  condition: or(eq(variables.selectedArch, arch"),eq(variables.selectedArch, ''))
+  condition: or(eq(variables.selectedArch, variables.PREBOOTSTRAP_ARCH),eq(variables.selectedArch, ''))
   pool:
     vmImage: ubuntu-20.04
   variables:
