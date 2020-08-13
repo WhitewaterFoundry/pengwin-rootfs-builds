@@ -1,14 +1,18 @@
 trigger:
 - master
 
-jobs:
-- template: debootstrap_architecture_template.yml
-  parameters:
-    arch: amd64
-    qemu_arch: x86_64
-    selectedArch: ${{ variables.architecture }}
-- template: debootstrap_architecture_template.yml
-  parameters:
-    arch: arm64
-    qemu_arch: aarch64
-    selectedArch: ${{ variables.architecture }}
+stages:
+- stage: amd64
+  jobs:
+  - template: debootstrap_architecture_template.yml
+    parameters:
+      arch: amd64
+      qemu_arch: x86_64
+      selectedArch: ${{ variables.architecture }}
+- stage: arm64
+  jobs:
+  - template: debootstrap_architecture_template.yml
+    parameters:
+      arch: arm64
+      qemu_arch: aarch64
+      selectedArch: ${{ variables.architecture }}
