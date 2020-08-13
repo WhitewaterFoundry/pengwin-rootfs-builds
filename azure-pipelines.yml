@@ -1,12 +1,14 @@
 trigger:
 - master
 
-jobs:
-- template: debootstrap_architecture_template.yml
-  parameters:
-    arch: amd64
-    qemu_arch: x86_64
-- template: debootstrap_architecture_template.yml
-  parameters:
-    arch: arm64
-    qemu_arch: aarch64
+steps:
+  - ${{ if or(eq(variables.architecture, "amd64"),eq(variables.architecture, Null)) }}:
+    - template: debootstrap_architecture_template.yml
+      parameters:
+        arch: amd64
+        qemu_arch: x86_64
+  - ${{ if or(eq(variables.architecture, "arm64"),eq(variables.architecture, Null)) }}:
+    - template: debootstrap_architecture_template.yml
+      parameters:
+        arch: arm64
+        qemu_arch: aarch64
