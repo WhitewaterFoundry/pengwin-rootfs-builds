@@ -19,7 +19,7 @@ jobs:
     displayName: 'Using debootstrap to create rootfs'
 
   - script: |
-      cd rootfs;
+      cd rootfs
       
       sudo mkdir -p sys
       sudo mkdir -p proc
@@ -29,7 +29,7 @@ jobs:
       sudo mount --bind /sys sys/
       sudo mount --bind /proc proc/
       sudo mount --bind /dev/pts dev/pts/
-      cd ..;
+      cd ..
     displayName: 'Entering chroot to mount dev, sys, proc and dev/pts'
 
   - script: sudo cp /usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static rootfs/usr/bin/;
@@ -92,6 +92,20 @@ jobs:
 
   - script: sudo chmod +x rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
     displayName: Marking static [rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static] as executable
+
+  - script: |
+      cd rootfs
+      
+      sudo mkdir -p sys
+      sudo mkdir -p proc
+      sudo mkdir -p dev/pts
+      
+      sudo mount --bind /dev dev/
+      sudo mount --bind /sys sys/
+      sudo mount --bind /proc proc/
+      sudo mount --bind /dev/pts dev/pts/
+      cd ..
+    displayName: 'Entering chroot to mount dev, sys, proc and dev/pts'
 
   - script: |
       sudo chroot rootfs/ /bin/bash -c "git clone https://github.com/WhitewaterFoundry/pengwin-setup.git"
