@@ -13,7 +13,7 @@ sudo rm -rf rootfs
 mkdir rootfs
 
 echo 'Using debootstrap to create rootfs'
-sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch=${PREBOOTSTRAP_ARCH} --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat,gcc-9-base,iputils-ping,dos2unix ${PREBOOTSTRAP_RELEASE} ./rootfs/"
+sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch=${PREBOOTSTRAP_ARCH} --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat,gcc-9-base,iputils-ping,dos2unix,iproute2 ${PREBOOTSTRAP_RELEASE} ./rootfs/"
 
 echo 'Entering chroot to mount dev, sys, proc and dev/pts'
 (
