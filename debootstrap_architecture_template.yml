@@ -1,7 +1,9 @@
 jobs:
 - job: ${{ parameters.arch }}
   pool: 
+    ${{ if ne(parameters['pool_name'], '') }}:
     name: ${{ parameters.pool_name }}
+    ${{ if ne(parameters['pool_vmImage'], '') }}:
     vmImage: ${{ parameters.pool_vmImage }}
   variables:
     PREBOOTSTRAP_ARCH: ${{ parameters.arch }}
