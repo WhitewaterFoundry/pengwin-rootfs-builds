@@ -1,6 +1,8 @@
 jobs:
 - job: ${{ parameters.arch }}
-  pool: ${{ parameters.pool }}
+  pool: 
+    name: ${{ parameters.pool_name }}
+    vmImage: ${{ parameters.pool_vmImage }}
   variables:
     PREBOOTSTRAP_ARCH: ${{ parameters.arch }}
     PREBOOTSTRAP_QEMU_ARCH: ${{ parameters.qemu_arch }}
