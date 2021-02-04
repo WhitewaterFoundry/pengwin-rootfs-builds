@@ -123,7 +123,7 @@ jobs:
   - task: PublishBuildArtifacts@1
 
   - script: |
-      sudo shutdown -r 0
+      sudo shutdown -r 1
       
     displayName: Clean up
 
