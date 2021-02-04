@@ -15,7 +15,9 @@ jobs:
       sudo apt-get install -y curl gnupg debootstrap qemu-user-static
     displayName: 'Installing build dependencies'
 
-  - script: mkdir rootfs
+  - script: |
+      sudo rm -rf rootfs
+      mkdir rootfs
     displayName: 'Creating rootfs folder'
 
   - script: sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch=$(PREBOOTSTRAP_ARCH) --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat,gcc-9-base,iputils-ping,dos2unix,iproute2 $(PREBOOTSTRAP_RELEASE) ./rootfs/"
@@ -120,6 +122,13 @@ jobs:
     displayName: Run unit tests
 
   - script: |
+      cd rootfs
+      sudo umount dev/
+      sudo umount sys/
+      sudo umount proc/
+      sudo umount dev/pts/
+      cd ..
+      
       sudo rm -rf rootfs
     displayName: Clean up
 
