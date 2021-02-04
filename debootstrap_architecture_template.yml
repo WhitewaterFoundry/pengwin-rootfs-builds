@@ -120,18 +120,12 @@ jobs:
       
     displayName: Run unit tests
 
+  - task: PublishBuildArtifacts@1
+
   - script: |
-      cd rootfs
-      sudo umount dev/pts/
-      sudo umount dev/
-      sudo umount sys/
-      sudo umount proc/
-      cd ..
+      sudo shutdown -r 0
       
-      sudo rm -rf rootfs
     displayName: Clean up
 
-  - task: PublishBuildArtifacts@1
-  
 
 
