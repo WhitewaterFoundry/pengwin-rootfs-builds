@@ -115,7 +115,13 @@ jobs:
       sudo chroot rootfs/ /bin/bash -c "cp -r pengwin-setup/tests /usr/local/bin/ && chmod -R +x /usr/local/bin/tests"
       sudo chroot rootfs/ /bin/bash -c "apt-get -y -q install shunit2"
       sudo chroot rootfs/ /bin/bash -c "cd /usr/local/bin/tests && ./run_tests.sh"
+      
+      sudo rm -rf rootfs
     displayName: Run unit tests
+
+  - script: |
+      sudo rm -rf rootfs
+    displayName: Clean up
 
   - task: PublishBuildArtifacts@1
   
