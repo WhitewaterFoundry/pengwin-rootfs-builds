@@ -8,8 +8,8 @@ stages:
     parameters:
       arch: amd64
       qemu_arch: x86_64
-      pool:     
-        vmImage: ubuntu-20.04
+      pool_name:    
+      pool_vmImage: ubuntu-20.04
 - stage: arm64
   jobs:
   - template: debootstrap_architecture_template.yml
@@ -17,4 +17,5 @@ stages:
     parameters:
       arch: arm64
       qemu_arch: aarch64
-      pool: Ubuntu
+      pool_name: Ubuntu
+      pool_vmImage: 
