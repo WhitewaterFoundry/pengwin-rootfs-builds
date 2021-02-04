@@ -122,10 +122,10 @@ jobs:
 
   - script: |
       cd rootfs
+      sudo umount dev/pts/
       sudo umount dev/
       sudo umount sys/
       sudo umount proc/
-      sudo umount dev/pts/
       cd ..
       
       sudo rm -rf rootfs
