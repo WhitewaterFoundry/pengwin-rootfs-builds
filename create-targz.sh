@@ -59,7 +59,7 @@ sudo chroot rootfs/ /bin/bash -c "echo 'Enter your UNIX password below. This is 
 echo 'Clean up apt cache'
 sudo chroot rootfs/ apt-get -y -q remove systemd dmidecode --allow-remove-essential
 sudo chroot rootfs/ /bin/bash -c "yes 'N' | apt-get -y -q dist-upgrade"
-sudo chroot rootfs/ apt-get install -q -y --allow-downgrades libc6=2.31-1.wsl locales=2.31-1.wsl libc-bin=2.31-1.wsl
+sudo chroot rootfs/ apt-get install -q -y --allow-downgrades iproute2=5.8.0-1
 sudo chroot rootfs/ apt-get -y -q autoremove
 sudo chroot rootfs/ apt-get -y -q autoclean
 sudo chroot rootfs/ apt-get -y -q clean
