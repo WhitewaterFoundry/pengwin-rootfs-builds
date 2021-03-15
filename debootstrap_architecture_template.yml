@@ -23,8 +23,8 @@ jobs:
   - script: |
       sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch=$(PREBOOTSTRAP_ARCH) \
         --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,\
-      man-db,socat,gcc-9-base,iputils-ping,dos2unix,iproute2,psmisc,rsync,\
-      xclip,gnome-themes-standard,gtk2-engines-murrine,dbus,dbus-x11,mesa-utils,libqt5core5a,binutils,libnss3,libegl1-mesa $(PREBOOTSTRAP_RELEASE) ./rootfs/"
+      man-db,socat,gcc-9-base,iputils-ping,dos2unix,psmisc,rsync \
+      $(PREBOOTSTRAP_RELEASE) ./rootfs/"
 
     displayName: 'Using debootstrap to create rootfs'
 
@@ -71,6 +71,7 @@ jobs:
     displayName: 'Configuring sudo message'
 
   - script: |
+      sudo chroot rootfs/ apt-get -y -q install xclip gnome-themes-standard gtk2-engines-murrine dbus dbus-x11 mesa-utils libqt5core5a binutils libnss3 libegl1-mesa
       sudo chroot rootfs/ apt-get -y -q remove systemd dmidecode --allow-remove-essential
       sudo chroot rootfs/ /bin/bash -c "yes 'N' | apt-get -y -q dist-upgrade"
       sudo chroot rootfs/ strip --remove-section=.note.ABI-tag /usr/lib/x86_64-linux-gnu/libQt5Core.so.5
