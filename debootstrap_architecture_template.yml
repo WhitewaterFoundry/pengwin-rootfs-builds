@@ -117,7 +117,7 @@ jobs:
       sudo mount --bind /proc proc/
       sudo mount --bind /dev/pts dev/pts/
       cd ..
-    condition: ne(parameters.pool_vmImage, '')
+    condition: ne('${{ parameters.pool_vmImage }}', '')
     displayName: 'Entering chroot to mount dev, sys, proc and dev/pts'
 
   - script: |
