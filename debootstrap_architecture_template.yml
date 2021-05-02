@@ -29,6 +29,8 @@ jobs:
       displayName: 'Start instance'
 
 - job: ${{ parameters.arch }}
+  ${{ if ne(parameters.aws_instance_id, '') }}:
+    dependsOn: [ startAgent ]
   pool:
     ${{ if ne(parameters.pool_name, '') }}:
       name: ${{ parameters.pool_name }}
