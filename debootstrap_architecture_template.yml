@@ -1,6 +1,35 @@
 jobs:
+- job: startAgent
+  condition: ne(parameters.aws_instance_id, '')
+  pool:
+    vmImage: ubuntu-latest
+  variables:
+    AWS_INSTANCE_ID: ${{ parameters.aws_instance_id }}
+
+  steps:
+
+    - task: DownloadSecureFile@1
+      name: awsCredentials
+      inputs:
+        secureFile: 'credentials'
+
+    - task: DownloadSecureFile@1
+      name: awsConfig
+      inputs:
+        secureFile: 'config'
+
+    - script: |
+        mkdir -p "${HOME}/.aws"
+        cp "$(awsCredentials.secureFilePath)" "${HOME}/.aws/credentials"
+        cp "$(awsConfig.secureFilePath)" "${HOME}/.aws/config"
+      displayName: 'Copy credentials'
+
+    - script: |
+        aws ec2 start-instances --instance-ids $(AWS_INSTANCE_ID)
+      displayName: 'Start instance'
+
 - job: ${{ parameters.arch }}
-  pool: 
+  pool:
     ${{ if ne(parameters.pool_name, '') }}:
       name: ${{ parameters.pool_name }}
     ${{ if ne(parameters.pool_vmImage, '') }}:
@@ -9,6 +38,7 @@ jobs:
     PREBOOTSTRAP_ARCH: ${{ parameters.arch }}
     PREBOOTSTRAP_QEMU_ARCH: ${{ parameters.qemu_arch }}
     PREBOOTSTRAP_RELEASE: bullseye
+    AWS_INSTANCE_ID: ${{ parameters.aws_instance_id }}
   steps:
   - script: |
       sudo apt-get update -y -q
@@ -30,11 +60,11 @@ jobs:
 
   - script: |
       cd rootfs
-      
+
       sudo mkdir -p sys
       sudo mkdir -p proc
       sudo mkdir -p dev/pts
-      
+
       sudo mount --bind /dev dev/
       sudo mount --bind /sys sys/
       sudo mount --bind /proc proc/
@@ -125,14 +155,14 @@ jobs:
       sudo chroot rootfs/ /bin/bash -c "cp -r pengwin-setup/tests /usr/local/bin/ && chmod -R +x /usr/local/bin/tests"
       sudo chroot rootfs/ /bin/bash -c "apt-get -y -q install shunit2 shellcheck"
       sudo chroot rootfs/ /bin/bash -c "cd /usr/local/bin/tests && ./run_tests.sh"
-      
+
     displayName: Run unit tests
 
   - task: PublishBuildArtifacts@1
 
   - script: |
       sudo shutdown -r 1
-      
+
     displayName: Clean up
 
 
