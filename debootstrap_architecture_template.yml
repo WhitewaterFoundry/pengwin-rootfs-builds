@@ -1,10 +1,10 @@
 jobs:
 - job: startAgent
-  condition: ne(parameters['aws_instance_id'], '')
-  pool:
-    vmImage: ubuntu-latest
   variables:
     AWS_INSTANCE_ID: ${{ parameters.aws_instance_id }}
+  condition: ne(variables['AWS_INSTANCE_ID'], '')
+  pool:
+    vmImage: ubuntu-latest
 
   steps:
 
