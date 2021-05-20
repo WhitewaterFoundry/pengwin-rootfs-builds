@@ -2,22 +2,23 @@ trigger:
 - master
 
 stages:
-- stage: amd64
-  jobs:
-  - template: debootstrap_architecture_template.yml
-    parameters:
-      arch: amd64
-      qemu_arch: x86_64
-      pool_name:    
-      pool_vmImage: ubuntu-20.04
 - stage: arm64
-  dependsOn: []
   jobs:
   - template: debootstrap_architecture_template.yml
-    
+
     parameters:
       arch: arm64
       qemu_arch: aarch64
       aws_instance_id: i-0abed7e4b7595271e
       pool_name: Ubuntu
-      pool_vmImage: 
+      pool_vmImage:
+      aws_instance_id: i-07ff8b8a4b2b8136d
+- stage: amd64
+  dependsOn: []
+  jobs:
+  - template: debootstrap_architecture_template.yml
+    parameters:
+      arch: amd64
+      qemu_arch: x86_64
+      pool_name:
+      pool_vmImage: ubuntu-20.04
