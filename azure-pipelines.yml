@@ -9,7 +9,6 @@ stages:
     parameters:
       arch: arm64
       qemu_arch: aarch64
-      aws_instance_id: i-0abed7e4b7595271e
       pool_name: Ubuntu
       pool_vmImage:
       aws_instance_id: i-07ff8b8a4b2b8136d
@@ -21,4 +20,4 @@ stages:
       arch: amd64
       qemu_arch: x86_64
       pool_name:
-      pool_vmImage: ubuntu-20.04
+      pool_vmImage: ubuntu-latest
