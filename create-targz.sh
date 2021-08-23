@@ -19,7 +19,7 @@ echo 'Entering chroot to mount dev, sys, proc and dev/pts'
 (
   # shellcheck disable=SC2164
   cd rootfs
-  
+
   sudo mkdir -p sys
   sudo mkdir -p proc
   sudo mkdir -p dev/pts
