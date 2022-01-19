@@ -61,7 +61,7 @@ sudo chroot rootfs/ apt-get -y -q install xclip gnome-themes-standard gtk2-engin
 sudo chroot rootfs/ apt-get -y -q remove systemd dmidecode --allow-remove-essential
 sudo chroot rootfs/ /bin/bash -c "yes 'N' | apt-get -y -q dist-upgrade"
 sudo chroot rootfs/ strip --remove-section=.note.ABI-tag /usr/lib/x86_64-linux-gnu/libQt5Core.so.5
-sudo chroot rootfs/ apt-get install -q -y --allow-downgrades iproute2=5.8.0-1
+sudo chroot rootfs/ apt-get install -q -y iproute2
 sudo chroot rootfs/ apt-get -y -q autoremove
 sudo chroot rootfs/ apt-get -y -q autoclean
 sudo chroot rootfs/ apt-get -y -q clean
