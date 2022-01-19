@@ -13,7 +13,7 @@ sudo rm -rf rootfs
 mkdir rootfs
 
 echo 'Using debootstrap to create rootfs'
-sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch=${PREBOOTSTRAP_ARCH} --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat,gcc-9-base,iputils-ping,dos2unix,psmisc,rsync ${PREBOOTSTRAP_RELEASE} ./rootfs/"
+sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch=${PREBOOTSTRAP_ARCH} --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat,gcc-9-base,iputils-ping,dos2unix,psmisc,rsync,iproute2 ${PREBOOTSTRAP_RELEASE} ./rootfs/"
 
 echo 'Entering chroot to mount dev, sys, proc and dev/pts'
 (
@@ -56,12 +56,12 @@ echo 'Configuring sudo message'
 sudo chroot rootfs/ /bin/bash -c "echo 'Defaults lecture_file = /etc/sudoers.lecture' >> /etc/sudoers"
 sudo chroot rootfs/ /bin/bash -c "echo 'Enter your UNIX password below. This is not your Windows password.' > /etc/sudoers.lecture"
 
-echo 'Clean up apt cache'
+echo 'Install additional packages'
 sudo chroot rootfs/ apt-get -y -q install xclip gnome-themes-standard gtk2-engines-murrine dbus dbus-x11 mesa-utils libqt5core5a binutils libnss3 libegl1-mesa
 sudo chroot rootfs/ apt-get -y -q remove systemd dmidecode --allow-remove-essential
 sudo chroot rootfs/ /bin/bash -c "yes 'N' | apt-get -y -q dist-upgrade"
 sudo chroot rootfs/ strip --remove-section=.note.ABI-tag /usr/lib/x86_64-linux-gnu/libQt5Core.so.5
-sudo chroot rootfs/ apt-get install -q -y iproute2
+echo 'Clean up apt cache'
 sudo chroot rootfs/ apt-get -y -q autoremove
 sudo chroot rootfs/ apt-get -y -q autoclean
 sudo chroot rootfs/ apt-get -y -q clean
