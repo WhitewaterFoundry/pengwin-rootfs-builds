@@ -103,11 +103,13 @@ jobs:
     displayName: 'Configuring sudo message'
 
   - script: |
-      sudo chroot rootfs/ apt-get -y -q install xclip gnome-themes-standard gtk2-engines-murrine dbus dbus-x11 mesa-utils libqt5core5a binutils libnss3 libegl1-mesa
+      sudo chroot rootfs/ apt-get -y -q install xclip gnome-themes-standard gtk2-engines-murrine dbus dbus-x11 mesa-utils libqt5core5a binutils libnss3 libegl1-mesa iproute2
       sudo chroot rootfs/ apt-get -y -q remove systemd dmidecode --allow-remove-essential
       sudo chroot rootfs/ /bin/bash -c "yes 'N' | apt-get -y -q dist-upgrade"
       sudo chroot rootfs/ strip --remove-section=.note.ABI-tag /usr/lib/x86_64-linux-gnu/libQt5Core.so.5
-      sudo chroot rootfs/ apt-get install -q -y --allow-downgrades iproute2=5.8.0-1
+    displayName: 'Installing additional packages'
+
+  - script: |
       sudo chroot rootfs/ apt-get -y -q autoremove
       sudo chroot rootfs/ apt-get -y -q autoclean
       sudo chroot rootfs/ apt-get -y -q clean
