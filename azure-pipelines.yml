@@ -1,6 +1,7 @@
 trigger:
 - master
 
+
 stages:
 - stage: arm64
   jobs:
