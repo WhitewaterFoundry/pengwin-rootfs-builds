@@ -12,7 +12,7 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "generic/debian10"
+  config.vm.box = "generic/debian11"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -59,6 +59,9 @@ Vagrant.configure("2") do |config|
       guest_service_interface: true
     }
   end
+
+  # be sure that you install: vagrant plugin install vagrant-secret, then run vagrant secret-init and fill the created secret.yaml with smb_username and smb_password
+  config.vm.synced_folder ".", "/vagrant", type: "smb", smb_username: Secret.smb_username, smb_password: Secret.smb_password
 
   #
   # View the documentation for the provider you are using for more
