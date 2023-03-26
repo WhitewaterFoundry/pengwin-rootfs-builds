@@ -44,7 +44,7 @@ jobs:
   steps:
   - script: |
       sudo apt-get update -y -q
-      sudo apt-get install -y curl gnupg debootstrap qemu-user-static
+      sudo apt-get install -y -q curl gnupg debootstrap qemu-user-static
     displayName: 'Installing build dependencies'
 
   - script: |
@@ -55,7 +55,7 @@ jobs:
   - script: |
       sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch=$(PREBOOTSTRAP_ARCH) \
         --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,\
-      man-db,socat,gcc-9-base,iputils-ping,dos2unix,psmisc,rsync \
+      man-db,socat,gcc-9-base,iputils-ping,dos2unix,psmisc,rsync,iproute2 \
       $(PREBOOTSTRAP_RELEASE) ./rootfs/"
 
     displayName: 'Using debootstrap to create rootfs'
@@ -103,7 +103,7 @@ jobs:
     displayName: 'Configuring sudo message'
 
   - script: |
-      sudo chroot rootfs/ apt-get -y -q install xclip gnome-themes-standard gtk2-engines-murrine dbus dbus-x11 mesa-utils libqt5core5a binutils libnss3 libegl1-mesa iproute2
+      sudo chroot rootfs/ apt-get -y -q install xclip gnome-themes-standard gtk2-engines-murrine dbus dbus-x11 mesa-utils libqt5core5a binutils libnss3 libegl1-mesa nano
       sudo chroot rootfs/ /bin/bash -c "yes 'N' | apt-get -y -q dist-upgrade"
       sudo chroot rootfs/ strip --remove-section=.note.ABI-tag /usr/lib/$(PREBOOTSTRAP_QEMU_ARCH)-linux-gnu/libQt5Core.so.5
     displayName: 'Installing additional packages'
