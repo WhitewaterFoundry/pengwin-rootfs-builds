@@ -39,7 +39,7 @@ jobs:
   variables:
     PREBOOTSTRAP_ARCH: ${{ parameters.arch }}
     PREBOOTSTRAP_QEMU_ARCH: ${{ parameters.qemu_arch }}
-    PREBOOTSTRAP_RELEASE: bullseye
+    PREBOOTSTRAP_RELEASE: bookworm
     AWS_INSTANCE_ID: ${{ parameters.aws_instance_id }}
   steps:
   - script: |
