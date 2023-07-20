@@ -61,6 +61,7 @@ jobs:
     displayName: 'Using debootstrap to create rootfs'
 
   - script: |
+      # shellcheck disable=SC2164
       cd rootfs
 
       sudo mkdir -p sys
@@ -71,25 +72,30 @@ jobs:
       sudo mount --bind /sys sys/
       sudo mount --bind /proc proc/
       sudo mount --bind /dev/pts dev/pts/
-      cd ..
     displayName: 'Entering chroot to mount dev, sys, proc and dev/pts'
 
-  - script: sudo cp /usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static rootfs/usr/bin/;
+  - script: |
+      sudo cp /usr/bin/qemu-"$(PREBOOTSTRAP_QEMU_ARCH)"-static rootfs/usr/bin/
     displayName: Copy static QEMU to rootfs
 
-  - script: sudo chmod +x rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
+  - script: |
+      sudo chmod +x rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
     displayName: Marking static [rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static] as executable
 
-  - script: sudo chroot rootfs/ /bin/bash -c "/debootstrap/debootstrap --second-stage --verbose"
+  - script: |
+      sudo chroot rootfs/ /bin/bash -c "/debootstrap/debootstrap --second-stage --verbose"
     displayName: Manually setting up debootstrap
 
-  - script: sudo curl https://salsa.debian.org/rhaist-guest/WSL/raw/master/linux_files/profile -so rootfs/etc/profile
+  - script:  |
+      sudo curl https://salsa.debian.org/rhaist-guest/WSL/raw/master/linux_files/profile -so rootfs/etc/profile
     displayName: 'Installing default profile'
 
-  - script: sudo curl https://raw.githubusercontent.com/WhitewaterFoundry/Pengwin/master/linux_files/setup -so rootfs/etc/setup
+  - script:  |
+      sudo curl https://raw.githubusercontent.com/WhitewaterFoundry/Pengwin/master/linux_files/setup -so rootfs/etc/setup
     displayName: 'Installing Pengwin bootstrap script'
 
-  - script: sudo chroot rootfs/ /bin/bash -c "bash /etc/setup --silent --install"
+  - script:  |
+      sudo chroot rootfs/ /bin/bash -c "bash /etc/setup --silent --install"
     displayName: 'Running Pengwin bootstrap script'
 
   - script: |
@@ -126,16 +132,20 @@ jobs:
       sudo chroot rootfs/ /bin/bash -c "echo 'set show-all-if-unmodified on' >> /etc/skel/.inputrc"
     displayName: 'Add defaults for readline and vim'
 
-  - script: sudo rm rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
+  - script: |
+      sudo rm rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
     displayName: Deleting QEMU from chroot
 
-  - script: cd rootfs && sudo tar -zcvf $(Build.ArtifactStagingDirectory)/install_$(PREBOOTSTRAP_ARCH)_rootfs.tar.gz --exclude proc --exclude dev --exclude sys --exclude='boot/*' ./*
+  - script: |
+      cd rootfs && sudo tar -zcvf $(Build.ArtifactStagingDirectory)/install_$(PREBOOTSTRAP_ARCH)_rootfs.tar.gz --exclude proc --exclude dev --exclude sys --exclude='boot/*' ./*
     displayName: 'Compressing rootfs'
 
-  - script: sudo cp /usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static rootfs/usr/bin/
+  - script: |
+      sudo cp /usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static rootfs/usr/bin/
     displayName: Copy static QEMU to rootfs
 
-  - script: sudo chmod +x rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
+  - script: |
+      sudo chmod +x rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static
     displayName: Marking static [rootfs/usr/bin/qemu-$(PREBOOTSTRAP_QEMU_ARCH)-static] as executable
 
   - script: |

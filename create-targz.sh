@@ -13,7 +13,10 @@ sudo rm -rf rootfs
 mkdir rootfs
 
 echo 'Using debootstrap to create rootfs'
-sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch=${PREBOOTSTRAP_ARCH} --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,man-db,socat,gcc-9-base,iputils-ping,dos2unix,psmisc,rsync,iproute2 ${PREBOOTSTRAP_RELEASE} ./rootfs/"
+sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch=${PREBOOTSTRAP_ARCH} \
+  --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,\
+  man-db,socat,gcc-12-base,iputils-ping,dos2unix,psmisc,rsync,iproute2 \
+  ${PREBOOTSTRAP_RELEASE} ./rootfs/"
 
 echo 'Entering chroot to mount dev, sys, proc and dev/pts'
 (
@@ -57,9 +60,9 @@ sudo chroot rootfs/ /bin/bash -c "echo 'Defaults lecture_file = /etc/sudoers.lec
 sudo chroot rootfs/ /bin/bash -c "echo 'Enter your UNIX password below. This is not your Windows password.' > /etc/sudoers.lecture"
 
 echo 'Install additional packages'
-sudo chroot rootfs/ apt-get -y -q install xclip gnome-themes-standard gtk2-engines-murrine dbus dbus-x11 mesa-utils libqt5core5a binutils libnss3 libegl1-mesa nano
+sudo chroot rootfs/ apt-get -y -q install xclip gnome-themes-extra gtk2-engines-murrine dbus dbus-x11 mesa-utils libqt5core5a binutils libnss3 libegl1-mesa mesa-vdpau-drivers mesa-vulkan-drivers mesa-va-drivers vainfo nano
 sudo chroot rootfs/ /bin/bash -c "yes 'N' | apt-get -y -q dist-upgrade"
-sudo chroot rootfs/ strip --remove-section=.note.ABI-tag /usr/lib/x86_64-linux-gnu/libQt5Core.so.5
+sudo chroot rootfs/ strip --remove-section=.note.ABI-tag /usr/lib/"${PREBOOTSTRAP_QEMU_ARCH}"-linux-gnu/libQt5Core.so.5
 echo 'Clean up apt cache'
 sudo chroot rootfs/ apt-get -y -q autoremove
 sudo chroot rootfs/ apt-get -y -q autoclean
