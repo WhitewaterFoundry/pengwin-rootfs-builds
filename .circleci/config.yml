@@ -122,9 +122,13 @@ jobs:
       
       - run:
           command: |
-            cd rootfs && sudo tar -zcvf $(Build.ArtifactStagingDirectory)/install_${PREBOOTSTRAP_ARCH}_rootfs.tar.gz --exclude proc --exclude dev --exclude sys --exclude='boot/*' ./*
+            mkdir /tmp/artifacts
+            cd rootfs && sudo tar -zcvf /tmp/artifacts/install_${PREBOOTSTRAP_ARCH}_rootfs.tar.gz --exclude proc --exclude dev --exclude sys --exclude='boot/*' ./*
           name: 'Compressing rootfs'
-      
+
+      - store_artifacts:
+        path: /tmp/artifacts
+        
       - run:
           command: |
             sudo cp /usr/bin/qemu-${PREBOOTSTRAP_QEMU_ARCH}-static rootfs/usr/bin/
