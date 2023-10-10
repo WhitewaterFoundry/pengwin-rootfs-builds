@@ -9,7 +9,6 @@ jobs:
       PREBOOTSTRAP_QEMU_ARCH: x86_64
       PREBOOTSTRAP_RELEASE: bookworm
     steps:
-      - checkout
       - run:
           name: Installing build dependencies
           command: |
@@ -127,7 +126,7 @@ jobs:
           name: 'Compressing rootfs'
 
       - store_artifacts:
-        path: /tmp/artifacts
+          path: /tmp/artifacts
         
       - run:
           command: |
