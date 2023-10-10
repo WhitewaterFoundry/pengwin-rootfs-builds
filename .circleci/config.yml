@@ -4,6 +4,10 @@ jobs:
     machine:
       image: ubuntu-2204:current
     resource_class: medium
+    environment:
+      PREBOOTSTRAP_ARCH: amd64
+      PREBOOTSTRAP_QEMU_ARCH: x86_64
+      PREBOOTSTRAP_RELEASE: bookworm
     steps:
       - checkout
       - run:
@@ -11,6 +15,155 @@ jobs:
           command: |
             sudo apt-get update -y -q
             sudo apt-get install -y -q curl gnupg debootstrap qemu-user-static
+      - run:
+          name: Creating rootfs folder
+          command: |
+            sudo rm -rf rootfs
+            mkdir rootfs
+      - run:
+          name: Using debootstrap to create rootfs
+          command: |
+            sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch="${PREBOOTSTRAP_ARCH}" \
+              --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,\
+            man-db,socat,gcc-12-base,iputils-ping,dos2unix,psmisc,rsync,iproute2 \
+            "${PREBOOTSTRAP_RELEASE}" ./rootfs/"
+      - run:
+          name: Entering chroot to mount dev, sys, proc and dev/pts
+          command: |
+            # shellcheck disable=SC2164
+            cd rootfs
+      
+            sudo mkdir -p sys
+            sudo mkdir -p proc
+            sudo mkdir -p dev/pts
+      
+            sudo mount --bind /dev dev/
+            sudo mount --bind /sys sys/
+            sudo mount --bind /proc proc/
+            sudo mount --bind /dev/pts dev/pts/
+      - run:
+          name: Copy static QEMU to rootfs
+          command: |
+            sudo cp /usr/bin/qemu-"${PREBOOTSTRAP_QEMU_ARCH}"-static rootfs/usr/bin/
+
+      - run:
+          command: |
+            sudo cp /usr/bin/qemu-"${PREBOOTSTRAP_QEMU_ARCH}"-static rootfs/usr/bin/
+          name: Copy static QEMU to rootfs
+      
+      - run:
+          command: |
+            sudo chmod +x rootfs/usr/bin/qemu-${PREBOOTSTRAP_QEMU_ARCH}-static
+          name: Marking static [rootfs/usr/bin/qemu-${PREBOOTSTRAP_QEMU_ARCH}-static] as executable
+      
+      - run:
+          command: |
+            sudo chroot rootfs/ /bin/bash -c "/debootstrap/debootstrap --second-stage --verbose"
+          name: Manually setting up debootstrap
+      
+      - run:
+          command:  |
+            sudo curl https://salsa.debian.org/rhaist-guest/WSL/raw/master/linux_files/profile -so rootfs/etc/profile
+          name: 'Installing default profile'
+      
+      - run:
+          command:  |
+            sudo curl https://raw.githubusercontent.com/WhitewaterFoundry/Pengwin/master/linux_files/setup -so rootfs/etc/setup
+          name: 'Installing Pengwin bootstrap script'
+      
+      - run:
+          command:  |
+            sudo chroot rootfs/ /bin/bash -c "bash /etc/setup --silent --install"
+          name: 'Running Pengwin bootstrap script'
+      
+      - run:
+          command: |
+            sudo chroot rootfs/ /bin/bash -c "echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen && locale-gen"
+            sudo chroot rootfs/ /bin/bash -c "update-locale LANGUAGE=en_US.UTF-8 LC_ALL=C"
+          name: 'Configuring language settings'
+      
+      - run:
+          command: |
+            sudo chroot rootfs/ /bin/bash -c "echo 'Defaults lecture_file = /etc/sudoers.lecture' >> /etc/sudoers"
+            sudo chroot rootfs/ /bin/bash -c "echo 'Enter your UNIX password below. This is not your Windows password.' > /etc/sudoers.lecture"
+          name: 'Configuring sudo message'
+      
+      - run:
+          command: |
+            sudo chroot rootfs/ apt-get -y -q install xclip gnome-themes-extra gtk2-engines-murrine dbus dbus-x11 mesa-utils libqt5core5a binutils libnss3 libegl1-mesa mesa-vdpau-drivers mesa-vulkan-drivers mesa-va-drivers vainfo nano
+            sudo chroot rootfs/ /bin/bash -c "yes 'N' | apt-get -y -q dist-upgrade"
+            sudo chroot rootfs/ strip --remove-section=.note.ABI-tag /usr/lib/${PREBOOTSTRAP_QEMU_ARCH}-linux-gnu/libQt5Core.so.5
+          name: 'Installing additional packages'
+      
+      - run:
+          command: |
+            sudo chroot rootfs/ apt-get -y -q autoremove
+            sudo chroot rootfs/ apt-get -y -q autoclean
+            sudo chroot rootfs/ apt-get -y -q clean
+          name: 'Clean up apt cache'
+      
+      - run:
+          command: |
+            sudo chroot rootfs/ /bin/bash -c "echo 'source /etc/vim/vimrc' > /etc/skel/.vimrc"
+            sudo chroot rootfs/ /bin/bash -c "echo 'syntax on' >> /etc/skel/.vimrc"
+            sudo chroot rootfs/ /bin/bash -c "echo 'set background=dark' >> /etc/skel/.vimrc"
+            sudo chroot rootfs/ /bin/bash -c "echo 'set visualbell' >> /etc/skel/.vimrc"
+            sudo chroot rootfs/ /bin/bash -c "echo 'set noerrorbells' >> /etc/skel/.vimrc"
+            sudo chroot rootfs/ /bin/bash -c "echo '\$include /etc/inputrc' > /etc/skel/.inputrc"
+            sudo chroot rootfs/ /bin/bash -c "echo 'set bell-style none' >> /etc/skel/.inputrc"
+            sudo chroot rootfs/ /bin/bash -c "echo 'set show-all-if-ambiguous on' >> /etc/skel/.inputrc"
+            sudo chroot rootfs/ /bin/bash -c "echo 'set show-all-if-unmodified on' >> /etc/skel/.inputrc"
+          name: 'Add defaults for readline and vim'
+      
+      - run:
+          command: |
+            sudo rm rootfs/usr/bin/qemu-${PREBOOTSTRAP_QEMU_ARCH}-static
+          name: Deleting QEMU from chroot
+      
+      - run:
+          command: |
+            cd rootfs && sudo tar -zcvf $(Build.ArtifactStagingDirectory)/install_${PREBOOTSTRAP_ARCH}_rootfs.tar.gz --exclude proc --exclude dev --exclude sys --exclude='boot/*' ./*
+          name: 'Compressing rootfs'
+      
+      - run:
+          command: |
+            sudo cp /usr/bin/qemu-${PREBOOTSTRAP_QEMU_ARCH}-static rootfs/usr/bin/
+          name: Copy static QEMU to rootfs
+      
+      - run:
+          command: |
+            sudo chmod +x rootfs/usr/bin/qemu-${PREBOOTSTRAP_QEMU_ARCH}-static
+          name: Marking static [rootfs/usr/bin/qemu-${PREBOOTSTRAP_QEMU_ARCH}-static] as executable
+      
+      - run:
+          command: |
+            cd rootfs
+      
+            sudo mkdir -p sys
+            sudo mkdir -p proc
+            sudo mkdir -p dev/pts
+      
+            sudo mount --bind /dev dev/
+            sudo mount --bind /sys sys/
+            sudo mount --bind /proc proc/
+            sudo mount --bind /dev/pts dev/pts/
+            cd ..
+          name: 'Entering chroot to mount dev, sys, proc and dev/pts'
+      
+      - run:
+          command: |
+            sudo chroot rootfs/ /bin/bash -c "git clone https://github.com/WhitewaterFoundry/pengwin-setup.git"
+            sudo chroot rootfs/ /bin/bash -c "cp -r pengwin-setup/tests /usr/local/bin/ && chmod -R +x /usr/local/bin/tests"
+            sudo chroot rootfs/ /bin/bash -c "apt-get -y -q install shunit2 shellcheck"
+            sudo chroot rootfs/ /bin/bash -c "cd /usr/local/bin/tests && ./run_tests.sh"
+      
+          name: Run unit tests
+      
+      - run:
+          command: |
+            sudo shutdown -r 1
+
+            
 workflows:
   version: 2
   build:
