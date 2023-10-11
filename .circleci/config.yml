@@ -128,22 +128,7 @@ jobs:
           command: |
             sudo chmod +x rootfs/usr/bin/qemu-${PREBOOTSTRAP_QEMU_ARCH}-static
           name: Marking static [rootfs/usr/bin/qemu-${PREBOOTSTRAP_QEMU_ARCH}-static] as executable
-      
-      - run:
-          command: |
-            cd rootfs
-      
-            sudo mkdir -p sys
-            sudo mkdir -p proc
-            sudo mkdir -p dev/pts
-      
-            sudo mount --bind /dev dev/
-            sudo mount --bind /sys sys/
-            sudo mount --bind /proc proc/
-            sudo mount --bind /dev/pts dev/pts/
-            cd ..
-          name: 'Entering chroot to mount dev, sys, proc and dev/pts'
-      
+           
       - run:
           command: |
             sudo chroot rootfs/ /bin/bash -c "git clone https://github.com/WhitewaterFoundry/pengwin-setup.git"
