@@ -45,9 +45,9 @@ jobs:
             pwd
 
             set -x
-            ll /dev/pts
+            ls -l /dev/pts
 
-            ll dev/pts/
+            ls -l dev/pts/
       - run:
           name: Copy static QEMU to rootfs
           command: |
