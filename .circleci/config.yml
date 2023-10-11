@@ -38,7 +38,6 @@ jobs:
             sudo mount --rbind /dev dev/
             sudo mount --bind /sys sys/
             sudo mount --bind /proc proc/
-            #sudo mount --bind /dev/pts dev/pts/
           name: Entering chroot to mount dev, sys, proc and dev/pts
 
       - run:
@@ -68,8 +67,7 @@ jobs:
       
       - run:
           command:  |
-            set -x
-            sudo chroot rootfs/ /bin/bash -x -c "bash -x /etc/setup --silent --install --debug"
+            sudo chroot rootfs/ /bin/bash -x -c "bash -x /etc/setup --silent --install"
           name: 'Running Pengwin bootstrap script'
       
       - run:
@@ -131,21 +129,11 @@ jobs:
            
       - run:
           command: |
-            #sudo mount --rbind /dev rootfs/dev/
-            #sudo mount --bind /sys rootfs/sys/
-            #sudo mount --bind /proc rootfs/proc/
-
             sudo chroot rootfs/ /bin/bash -c "git clone https://github.com/WhitewaterFoundry/pengwin-setup.git"
             sudo chroot rootfs/ /bin/bash -c "cp -r pengwin-setup/tests /usr/local/bin/ && chmod -R +x /usr/local/bin/tests"
             sudo chroot rootfs/ /bin/bash -c "apt-get -y -q install shunit2 shellcheck"
-            sudo chroot rootfs/ /bin/bash -c "cd /usr/local/bin/tests && ./run_tests.sh"
-      
+            sudo chroot rootfs/ /bin/bash -c "cd /usr/local/bin/tests && ./run_tests.sh"     
           name: Run unit tests
-      
-      - run:
-          command: |
-            sudo shutdown -r 1
-
             
 workflows:
   version: 2
