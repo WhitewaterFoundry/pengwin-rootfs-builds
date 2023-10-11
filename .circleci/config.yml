@@ -19,6 +19,7 @@ jobs:
           command: |
             sudo rm -rf rootfs
             mkdir rootfs
+            pwd
       - run:
           name: Using debootstrap to create rootfs
           command: |
@@ -40,9 +41,17 @@ jobs:
             sudo mount --bind /sys sys/
             sudo mount --bind /proc proc/
             sudo mount --bind /dev/pts dev/pts/
+
+            pwd
+
+            set -x
+            ll /dev/pts
+
+            ll dev/pts/
       - run:
           name: Copy static QEMU to rootfs
           command: |
+            pwd
             sudo cp /usr/bin/qemu-"${PREBOOTSTRAP_QEMU_ARCH}"-static rootfs/usr/bin/
 
       - run:
