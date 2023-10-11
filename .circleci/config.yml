@@ -49,7 +49,6 @@ jobs:
       
       - run:
           command: |
-            set -x
             sudo chmod +x rootfs/usr/bin/qemu-${PREBOOTSTRAP_QEMU_ARCH}-static
           name: Marking static [rootfs/usr/bin/qemu-${PREBOOTSTRAP_QEMU_ARCH}-static] as executable
       
@@ -71,7 +70,7 @@ jobs:
       - run:
           command:  |
             set -x
-            sudo chroot rootfs/ /bin/bash -c "bash /etc/setup --install"
+            sudo chroot rootfs/ /bin/bash -x -c "bash -x /etc/setup --install"
           name: 'Running Pengwin bootstrap script'
       
       - run:
