@@ -129,6 +129,14 @@ jobs:
            
       - run:
           command: |
+            cd rootfs
+      
+            sudo mount --rbind /dev dev/
+            sudo mount --bind /sys sys/
+            sudo mount --bind /proc proc/
+
+            cd ..
+            
             sudo chroot rootfs/ /bin/bash -c "git clone https://github.com/WhitewaterFoundry/pengwin-setup.git"
             sudo chroot rootfs/ /bin/bash -c "cp -r pengwin-setup/tests /usr/local/bin/ && chmod -R +x /usr/local/bin/tests"
             sudo chroot rootfs/ /bin/bash -c "apt-get -y -q install shunit2 shellcheck"
