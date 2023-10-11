@@ -10,25 +10,23 @@ jobs:
       PREBOOTSTRAP_RELEASE: bookworm
     steps:
       - run:
-          name: Installing build dependencies
           command: |
             sudo apt-get update -y -q
             sudo apt-get install -y -q curl gnupg debootstrap qemu-user-static
+          name: Installing build dependencies
       - run:
-          name: Creating rootfs folder
           command: |
             sudo rm -rf rootfs
             mkdir rootfs
-            pwd
+          name: Creating rootfs folder
       - run:
-          name: Using debootstrap to create rootfs
           command: |
             sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch="${PREBOOTSTRAP_ARCH}" \
               --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,\
             man-db,socat,gcc-12-base,iputils-ping,dos2unix,psmisc,rsync,iproute2 \
             "${PREBOOTSTRAP_RELEASE}" ./rootfs/"
+          name: Using debootstrap to create rootfs
       - run:
-          name: Entering chroot to mount dev, sys, proc and dev/pts
           command: |
             # shellcheck disable=SC2164
             cd rootfs
@@ -41,26 +39,17 @@ jobs:
             sudo mount --bind /sys sys/
             sudo mount --bind /proc proc/
             sudo mount --bind /dev/pts dev/pts/
+          name: Entering chroot to mount dev, sys, proc and dev/pts
 
-            pwd
-
+      - run:
+          command: |
             set -x
-            ls -l /dev/pts
-
-            ls -l dev/pts/
-      - run:
-          name: Copy static QEMU to rootfs
-          command: |
-            pwd
-            sudo cp /usr/bin/qemu-"${PREBOOTSTRAP_QEMU_ARCH}"-static rootfs/usr/bin/
-
-      - run:
-          command: |
             sudo cp /usr/bin/qemu-"${PREBOOTSTRAP_QEMU_ARCH}"-static rootfs/usr/bin/
           name: Copy static QEMU to rootfs
       
       - run:
           command: |
+            set -x
             sudo chmod +x rootfs/usr/bin/qemu-${PREBOOTSTRAP_QEMU_ARCH}-static
           name: Marking static [rootfs/usr/bin/qemu-${PREBOOTSTRAP_QEMU_ARCH}-static] as executable
       
@@ -81,7 +70,8 @@ jobs:
       
       - run:
           command:  |
-            sudo chroot rootfs/ /bin/bash -c "bash /etc/setup --silent --install"
+            set -x
+            sudo chroot rootfs/ /bin/bash -c "bash /etc/setup --install"
           name: 'Running Pengwin bootstrap script'
       
       - run:
@@ -89,12 +79,6 @@ jobs:
             sudo chroot rootfs/ /bin/bash -c "echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen && locale-gen"
             sudo chroot rootfs/ /bin/bash -c "update-locale LANGUAGE=en_US.UTF-8 LC_ALL=C"
           name: 'Configuring language settings'
-      
-      - run:
-          command: |
-            sudo chroot rootfs/ /bin/bash -c "echo 'Defaults lecture_file = /etc/sudoers.lecture' >> /etc/sudoers"
-            sudo chroot rootfs/ /bin/bash -c "echo 'Enter your UNIX password below. This is not your Windows password.' > /etc/sudoers.lecture"
-          name: 'Configuring sudo message'
       
       - run:
           command: |
