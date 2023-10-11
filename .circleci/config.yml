@@ -67,7 +67,7 @@ jobs:
       
       - run:
           command:  |
-            sudo chroot rootfs/ /bin/bash -x -c "bash -x /etc/setup --silent --install"
+            sudo chroot rootfs/ /bin/bash -c "bash /etc/setup --silent --install --debug"
           name: 'Running Pengwin bootstrap script'
       
       - run:
