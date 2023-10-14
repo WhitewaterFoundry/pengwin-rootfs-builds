@@ -91,7 +91,7 @@ jobs:
     displayName: 'Installing default profile'
 
   - script:  |
-      sudo cp linux_files/setup -so rootfs/etc/setup
+      sudo cp linux_files/setup rootfs/etc/setup
     displayName: 'Installing Pengwin bootstrap script'
 
   - script:  |

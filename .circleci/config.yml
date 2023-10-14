@@ -65,7 +65,7 @@ jobs:
       
       - run:
           command:  |
-            sudo cp linux_files/setup -so rootfs/etc/setup
+            sudo cp linux_files/setup rootfs/etc/setup
           name: 'Installing Pengwin bootstrap script'
       
       - run:
