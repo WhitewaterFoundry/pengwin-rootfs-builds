@@ -91,11 +91,11 @@ jobs:
     displayName: 'Installing default profile'
 
   - script:  |
-      sudo curl https://raw.githubusercontent.com/WhitewaterFoundry/Pengwin/master/linux_files/setup -so rootfs/etc/setup
+      sudo cp linux_files/setup -so rootfs/etc/setup
     displayName: 'Installing Pengwin bootstrap script'
 
   - script:  |
-      sudo chroot rootfs/ /bin/bash -c "bash /etc/setup --silent --install"
+      sudo chroot rootfs/ /bin/bash -c "bash /etc/setup --silent --install --debug"
     displayName: 'Running Pengwin bootstrap script'
 
   - script: |
