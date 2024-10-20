@@ -64,7 +64,8 @@ jobs:
 
       - run:
           command:  |
-            sudo curl https://salsa.debian.org/rhaist-guest/WSL/raw/master/linux_files/profile -so rootfs/etc/profile
+            sudo cp linux_files/profile rootfs/etc/profile
+            sudo chmod 644 rootfs/etc/profile
           name: 'Installing default profile'
 
       - run:

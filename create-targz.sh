@@ -43,10 +43,11 @@ echo 'Manually setting up debootstrap'
 sudo chroot rootfs/ /bin/bash -c "/debootstrap/debootstrap --second-stage --verbose"
 
 echo 'Installing default profile'
-sudo curl https://salsa.debian.org/rhaist-guest/WSL/raw/master/linux_files/profile -so rootfs/etc/profile
+sudo cp linux_files/profile rootfs/etc/profile
+sudo chmod 644 rootfs/etc/profile
 
 echo 'Installing Pengwin bootstrap script'
-sudo curl https://raw.githubusercontent.com/WhitewaterFoundry/Pengwin/master/linux_files/setup -so rootfs/etc/setup
+sudo cp linux_files/setup rootfs/etc/setup
 
 echo 'Running Pengwin bootstrap script'
 sudo chroot rootfs/ /bin/bash -c "bash /etc/setup --silent --install"
