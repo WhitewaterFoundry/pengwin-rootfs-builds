@@ -14,7 +14,7 @@ mkdir rootfs
 
 echo 'Using debootstrap to create rootfs'
 sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch=${PREBOOTSTRAP_ARCH} \
-  --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,\
+  --include=sudo,locales,git,openssh-client,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,\
   man-db,socat,gcc-12-base,iputils-ping,dos2unix,psmisc,rsync,iproute2,apt-utils \
   ${PREBOOTSTRAP_RELEASE} ./rootfs/"
 
