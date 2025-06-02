@@ -54,8 +54,8 @@ jobs:
 
   - script: |
       sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch=$(PREBOOTSTRAP_ARCH) \
-        --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,\
-      man-db,socat,gcc-12-base,iputils-ping,dos2unix,psmisc,rsync,iproute2 \
+        --include=sudo,locales,git,openssh-client,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,\
+      man-db,socat,gcc-12-base,iputils-ping,dos2unix,psmisc,rsync,iproute2,apt-utils,kmod \
       $(PREBOOTSTRAP_RELEASE) ./rootfs/"
 
     displayName: 'Using debootstrap to create rootfs'
@@ -87,11 +87,12 @@ jobs:
     displayName: Manually setting up debootstrap
 
   - script:  |
-      sudo curl https://salsa.debian.org/rhaist-guest/WSL/raw/master/linux_files/profile -so rootfs/etc/profile
+      sudo cp linux_files/profile rootfs/etc/profile
+      sudo chmod 644 rootfs/etc/profile
     displayName: 'Installing default profile'
 
   - script:  |
-      sudo cp linux_files/setup -so rootfs/etc/setup
+      sudo cp linux_files/setup rootfs/etc/setup
     displayName: 'Installing Pengwin bootstrap script'
 
   - script:  |
@@ -109,8 +110,9 @@ jobs:
     displayName: 'Configuring sudo message'
 
   - script: |
-      sudo chroot rootfs/ apt-get -y -q install xclip gnome-themes-extra gtk2-engines-murrine dbus dbus-x11 mesa-utils libqt5core5a binutils libnss3 libegl1-mesa mesa-vdpau-drivers mesa-vulkan-drivers mesa-va-drivers vainfo nano
+      sudo chroot rootfs/ apt-get update
       sudo chroot rootfs/ /bin/bash -c "yes 'N' | apt-get -y -q dist-upgrade"
+      sudo chroot rootfs/ apt-get -y -q install xclip gnome-themes-extra gtk2-engines-murrine dbus dbus-x11 mesa-utils libqt5core5a binutils libnss3 libegl1-mesa mesa-libgallium mesa-vdpau-drivers mesa-va-drivers vainfo nano
       sudo chroot rootfs/ strip --remove-section=.note.ABI-tag /usr/lib/$(PREBOOTSTRAP_QEMU_ARCH)-linux-gnu/libQt5Core.so.5
     displayName: 'Installing additional packages'
 
@@ -166,10 +168,14 @@ jobs:
   - script: |
       sudo chroot rootfs/ /bin/bash -c "git clone https://github.com/WhitewaterFoundry/pengwin-setup.git"
       sudo chroot rootfs/ /bin/bash -c "cp -r pengwin-setup/tests /usr/local/bin/ && chmod -R +x /usr/local/bin/tests"
-      sudo chroot rootfs/ /bin/bash -c "apt-get -y -q install shunit2 shellcheck"
-      sudo chroot rootfs/ /bin/bash -c "cd /usr/local/bin/tests && ./run_tests.sh"
+      sudo chroot rootfs/ /bin/bash -c "cd /usr/local/bin/tests && source ./install_shunit2.sh && ./run_tests.sh"
 
     displayName: Run unit tests
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: 'rootfs/usr/local/bin/tests/results/*.xml'
 
   - task: PublishBuildArtifacts@1
 

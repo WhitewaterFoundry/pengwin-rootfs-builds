@@ -14,8 +14,8 @@ mkdir rootfs
 
 echo 'Using debootstrap to create rootfs'
 sudo bash -c "debootstrap --verbose --variant=minbase --foreign --arch=${PREBOOTSTRAP_ARCH} \
-  --include=sudo,locales,git,ssh,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,\
-  man-db,socat,gcc-12-base,iputils-ping,dos2unix,psmisc,rsync,iproute2 \
+  --include=sudo,locales,git,openssh-client,gnupg,apt-transport-https,wget,ca-certificates,less,curl,bash-completion,vim,\
+  man-db,socat,gcc-12-base,iputils-ping,dos2unix,psmisc,rsync,iproute2,apt-utils,kmod \
   ${PREBOOTSTRAP_RELEASE} ./rootfs/"
 
 echo 'Entering chroot to mount dev, sys, proc and dev/pts'
@@ -43,10 +43,11 @@ echo 'Manually setting up debootstrap'
 sudo chroot rootfs/ /bin/bash -c "/debootstrap/debootstrap --second-stage --verbose"
 
 echo 'Installing default profile'
-sudo curl https://salsa.debian.org/rhaist-guest/WSL/raw/master/linux_files/profile -so rootfs/etc/profile
+sudo cp linux_files/profile rootfs/etc/profile
+sudo chmod 644 rootfs/etc/profile
 
 echo 'Installing Pengwin bootstrap script'
-sudo curl https://raw.githubusercontent.com/WhitewaterFoundry/Pengwin/master/linux_files/setup -so rootfs/etc/setup
+sudo cp linux_files/setup rootfs/etc/setup
 
 echo 'Running Pengwin bootstrap script'
 sudo chroot rootfs/ /bin/bash -c "bash /etc/setup --silent --install"
@@ -60,8 +61,9 @@ sudo chroot rootfs/ /bin/bash -c "echo 'Defaults lecture_file = /etc/sudoers.lec
 sudo chroot rootfs/ /bin/bash -c "echo 'Enter your UNIX password below. This is not your Windows password.' > /etc/sudoers.lecture"
 
 echo 'Install additional packages'
-sudo chroot rootfs/ apt-get -y -q install xclip gnome-themes-extra gtk2-engines-murrine dbus dbus-x11 mesa-utils libqt5core5a binutils libnss3 libegl1-mesa mesa-vdpau-drivers mesa-vulkan-drivers mesa-va-drivers vainfo nano
+sudo chroot rootfs/ apt-get update
 sudo chroot rootfs/ /bin/bash -c "yes 'N' | apt-get -y -q dist-upgrade"
+sudo chroot rootfs/ apt-get -y -q install xclip gnome-themes-extra gtk2-engines-murrine dbus dbus-x11 mesa-utils libqt5core5a binutils libnss3 libegl1-mesa mesa-libgallium mesa-vdpau-drivers mesa-va-drivers vainfo nano
 sudo chroot rootfs/ strip --remove-section=.note.ABI-tag /usr/lib/"${PREBOOTSTRAP_QEMU_ARCH}"-linux-gnu/libQt5Core.so.5
 echo 'Clean up apt cache'
 sudo chroot rootfs/ apt-get -y -q autoremove
