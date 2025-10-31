@@ -13,7 +13,7 @@ jobs:
       PREBOOTSTRAP_QEMU_ARCH: aarch64
       #PREBOOTSTRAP_ARCH: amd64
       #PREBOOTSTRAP_QEMU_ARCH: x86_64
-      PREBOOTSTRAP_RELEASE: bookworm
+      PREBOOTSTRAP_RELEASE: trixie
     steps:
       - checkout
       - run:

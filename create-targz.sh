@@ -2,7 +2,7 @@
 
 export PREBOOTSTRAP_ARCH="${1:-amd64}"
 export PREBOOTSTRAP_QEMU_ARCH="${2:-x86_64}"
-export PREBOOTSTRAP_RELEASE="${3:-testing}"
+export PREBOOTSTRAP_RELEASE="${3:-stable}"
 
 echo 'Installing build dependencies'
 sudo apt-get update -y -q

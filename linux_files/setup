@@ -33,16 +33,14 @@ function install_repositories() {
   apt-get -y -q install curl
 
   export os=debian
-  export dist=bookworm
+  export dist=trixie
 
-  curl -s https://packagecloud.io/install/repositories/whitewaterfoundry/pengwin-base$1/script.deb.sh | bash ${DEBUG_ARG}
-  curl -s https://packagecloud.io/install/repositories/whitewaterfoundry/pengwin-setup$1/script.deb.sh | bash ${DEBUG_ARG}
-
+  curl -s https://packagecloud.io/install/repositories/whitewaterfoundry/pengwin-base"$1"/script.deb.sh | bash "${DEBUG_ARG}"
+  curl -s https://packagecloud.io/install/repositories/whitewaterfoundry/pengwin-setup"$1"/script.deb.sh | bash "${DEBUG_ARG}"
+  curl -s https://packagecloud.io/install/repositories/whitewaterfoundry/wslu"$1"/script.deb.sh | bash "${DEBUG_ARG}"
 
   export os=debian
   export dist=bullseye
-
-  curl -s https://packagecloud.io/install/repositories/whitewaterfoundry/wslu/script.deb.sh | bash ${DEBUG_ARG}
 
   apt-get update -y -q
 }
@@ -52,7 +50,7 @@ function install_packages() {
   apt-get -y -q install pengwin-base wslu pengwin-setup
 
   # Remove packagecloud repository definitions
-  rm /etc/apt/sources.list.d/whitewaterfoundry_*.list
+  rm /etc/apt/sources.list.d/whitewaterfoundry_*
 
   # Update apt repositories
   apt-get -y -q update
