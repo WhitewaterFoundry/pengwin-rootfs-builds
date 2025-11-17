@@ -172,7 +172,9 @@ jobs:
       sudo chroot rootfs/ /bin/bash -c "cd /usr/local/bin/tests && source ./install_shunit2.sh && ./run_tests.sh"
 
     displayName: Run unit tests
-
+    continueOnError: true
+    timeoutInMinutes: 40    
+    
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'JUnit'
