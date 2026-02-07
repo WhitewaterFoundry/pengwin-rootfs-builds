@@ -63,7 +63,7 @@ sudo chroot rootfs/ /bin/bash -c "echo 'Enter your UNIX password below. This is 
 echo 'Install additional packages'
 sudo chroot rootfs/ apt-get update
 sudo chroot rootfs/ /bin/bash -c "yes 'N' | apt-get -y -q dist-upgrade"
-sudo chroot rootfs/ apt-get -y -q install xclip gnome-themes-extra gtk2-engines-murrine dbus dbus-x11 mesa-utils libqt5core5a binutils libnss3 libegl1-mesa mesa-libgallium mesa-vdpau-drivers mesa-va-drivers vainfo nano
+sudo chroot rootfs/ apt-get -y -q install xclip gnome-themes-extra gtk2-engines-murrine dbus dbus-x11 mesa-utils libqt5core5a binutils libnss3 mesa-libgallium mesa-vdpau-drivers mesa-va-drivers vainfo nano
 sudo chroot rootfs/ strip --remove-section=.note.ABI-tag /usr/lib/"${PREBOOTSTRAP_QEMU_ARCH}"-linux-gnu/libQt5Core.so.5
 echo 'Clean up apt cache'
 sudo chroot rootfs/ apt-get -y -q autoremove
